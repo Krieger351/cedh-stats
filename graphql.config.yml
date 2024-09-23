@@ -1,0 +1,2 @@
+schema: https://edhtop16.com/api/graphql
+documents: '**/*.graphql'

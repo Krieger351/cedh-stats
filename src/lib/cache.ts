@@ -1,0 +1,35 @@
+import path from "node:path";
+import fs from "node:fs/promises";
+
+const cachePath = path.resolve(process.cwd(), ".cache");
+
+export const checkCache = async (cacheId: string): Promise<boolean> => {
+  try {
+    await fs.access(path.resolve(cachePath, cacheId));
+  } catch {
+    return false;
+  }
+  return true;
+};
+
+export const writeCache = async (
+  cacheId: string,
+  data: unknown,
+): Promise<void> => {
+  const filePath = path.resolve(cachePath, cacheId);
+  const dirname = path.dirname(filePath);
+
+  await fs.mkdir(dirname, { recursive: true });
+
+  if (typeof data === "string") {
+    await fs.writeFile(filePath, data);
+  }
+
+  await fs.writeFile(filePath, JSON.stringify(data, null, 2));
+};
+
+export const readCache = async (cacheId: string): Promise<string> => {
+  const buffer = await fs.readFile(path.resolve(cachePath, cacheId));
+
+  return buffer.toString();
+};

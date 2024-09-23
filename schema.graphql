@@ -1,0 +1,158 @@
+schema {
+  query: Query
+}
+
+type Commander {
+  breakdownUrl: String!
+  colorId: String!
+  conversionRate(filters: CommanderStatsFilters): Float!
+  count(filters: CommanderStatsFilters): Int!
+  entries(filters: EntryFilters, sortBy: EntrySortBy = STANDING, sortDir: SortDirection = DESC): [Entry!]!
+  id: ID!
+  imageUrls: [String!]!
+  name: String!
+  topCuts(filters: CommanderStatsFilters): Int!
+  topEntries(sortBy: TopCommandersTopEntriesSortBy = TOP, timePeriod: TimePeriod = ONE_MONTH): [Entry!]!
+}
+
+enum CommanderSortBy {
+  CONVERSION
+  ENTRIES
+  NAME
+  TOP_CUTS
+}
+
+input CommanderStatsFilters {
+  colorId: String
+  maxDate: String
+  maxEntries: Int
+  maxSize: Int
+  minDate: String
+  minEntries: Int
+  minSize: Int
+  timePeriod: TimePeriod
+  topCut: Int
+}
+
+type Entry {
+  commander: Commander!
+  decklist: String
+  draws: Int!
+  id: ID!
+  losses: Int!
+  lossesBracket: Int!
+  lossesSwiss: Int!
+  player: Player
+  standing: Int!
+  tables: [TournamentTable!]!
+  tournament: Tournament!
+  winRate: Float
+  wins: Int!
+  winsBracket: Int!
+  winsSwiss: Int!
+}
+
+input EntryFilters {
+  maxDate: String
+  maxDraws: Int
+  maxLosses: Int
+  maxSize: Int
+  maxStanding: Int
+  maxWins: Int
+  minDate: String
+  minDraws: Int
+  minLosses: Int
+  minSize: Int
+  minStanding: Int
+  minWins: Int
+}
+
+enum EntrySortBy {
+  DATE
+  DRAWS
+  LOSSES
+  STANDING
+  WINRATE
+  WINS
+}
+
+type Player {
+  conversionRate: Float!
+  draws: Int!
+  entries: [Entry!]!
+  id: ID!
+  losses: Int!
+  name: String!
+  topCuts: Int!
+  topdeckProfile: String
+  winRate: Float!
+  wins: Int!
+}
+
+type Query {
+  commander(name: String!): Commander!
+  commanderNames: [String!]!
+  commanders(filters: CommanderStatsFilters, sortBy: CommanderSortBy = TOP_CUTS, sortDir: SortDirection = DESC): [Commander!]!
+  player(profile: String!): Player!
+  topCommanders(sortBy: TopCommandersSortBy, timePeriod: TimePeriod): [Commander!]!
+  tournament(TID: String!): Tournament!
+  tournaments(filters: TournamentFilters, search: String, sortBy: TournamentSortBy = DATE): [Tournament!]!
+}
+
+enum SortDirection {
+  ASC
+  DESC
+}
+
+enum TimePeriod {
+  ONE_MONTH
+  SIX_MONTHS
+  THREE_MONTHS
+}
+
+enum TopCommandersSortBy {
+  CONVERSION
+  POPULARITY
+}
+
+enum TopCommandersTopEntriesSortBy {
+  NEW
+  TOP
+}
+
+type Tournament {
+  TID: String!
+  entries: [Entry!]!
+  id: ID!
+  name: String!
+  rounds: [TournamentRound!]!
+  size: Int!
+  swissRounds: Int!
+  topCut: Int!
+  topPod: [Entry!]!
+  tournamentDate: String!
+}
+
+input TournamentFilters {
+  maxSize: Int
+  minSize: Int
+  timePeriod: TimePeriod
+}
+
+type TournamentRound {
+  round: String!
+  tables: [TournamentTable!]!
+}
+
+enum TournamentSortBy {
+  DATE
+  PLAYERS
+}
+
+type TournamentTable {
+  entries: [Entry]!
+  roundName: String!
+  table: Int!
+  winner: Entry
+  winnerSeatPosition: Int
+}
