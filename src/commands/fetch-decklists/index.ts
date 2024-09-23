@@ -2,9 +2,10 @@ import type { Command } from "commander";
 import { checkCache, readCache, writeCache } from "@/lib/cache";
 import { extractMoxfieldId, validDecklistUrl } from "@/lib/moxfield";
 import { getList } from "@/lib/playwright";
+import { commanderDataKey, decklistKey } from "@/lib/cache-keys";
 
 export const fetchDecklists = async (commander_name: string) => {
-  const commanderDataCacheKey = `commanders/${encodeURIComponent(commander_name)}.json`;
+  const commanderDataCacheKey = commanderDataKey(commander_name);
 
   if (!(await checkCache(commanderDataCacheKey))) {
     console.log("Data missing, you need to run load-data-for-commander");
@@ -19,7 +20,7 @@ export const fetchDecklists = async (commander_name: string) => {
     console.group(`Fetching ${index}`);
 
     const id = extractMoxfieldId(decklistUrl);
-    const DECKLIST_CACHE_KEY = `decklists/${encodeURIComponent(commander_name)}/${id}.json`;
+    const DECKLIST_CACHE_KEY = decklistKey(commander_name, id);
     const decklistExists = await checkCache(DECKLIST_CACHE_KEY);
     if (decklistExists) {
       console.log(`Cache hit for ${id}`);

@@ -1,5 +1,6 @@
 import path from "node:path";
 import fs from "node:fs/promises";
+import * as prettier from "prettier";
 
 const cachePath = path.resolve(process.cwd(), ".cache");
 
@@ -21,11 +22,10 @@ export const writeCache = async (
 
   await fs.mkdir(dirname, { recursive: true });
 
-  if (typeof data === "string") {
-    await fs.writeFile(filePath, data);
-  }
-
-  await fs.writeFile(filePath, JSON.stringify(data, null, 2));
+  await fs.writeFile(
+    filePath,
+    await prettier.format(JSON.stringify(data), { parser: "json" }),
+  );
 };
 
 export const readCache = async (cacheId: string): Promise<string> => {

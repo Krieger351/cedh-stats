@@ -1,6 +1,7 @@
 {
-  "extends": "@tsconfig/node-lts/tsconfig.json",
+  "extends": "@tsconfig/node22/tsconfig.json",
   "compilerOptions": {
+    "lib": ["esnext"],
     "moduleResolution": "bundler",
     "plugins": [
       {
