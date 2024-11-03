@@ -1,18 +1,18 @@
 import type { Command } from "commander";
-import { loadCommanderData, loadDecklist } from "@/lib/data";
+import { loadCommanderData } from "@/lib/data";
 import { extractMoxfieldId, validDecklistUrl } from "@/lib/moxfield";
-import { writeCache } from "@/lib/cache";
-import { idWinRateKey } from "@/lib/cache-keys";
-import { checkCacheKeysExit } from "@/lib/check-cache-keys-exit";
+import { buildLoaders } from "@/lib/cache-load";
 
 export const metadataIdWinRate = async (
   commander_name: string,
   { skipCache }: { skipCache?: boolean },
 ) => {
+  const loaders = buildLoaders(commander_name);
   console.log(`Building Id/WinRate map for ${commander_name}`);
   console.log("Checking cache...");
-  const CACHE_KEY = idWinRateKey(commander_name);
-  checkCacheKeysExit(skipCache, CACHE_KEY);
+  if (skipCache && (await loaders.id_win_rate.check())) {
+    process.exit();
+  }
 
   console.log("Loading commander data");
   const commanderData = await loadCommanderData(commander_name);
@@ -26,7 +26,7 @@ export const metadataIdWinRate = async (
     acc[id] = winRate;
   }
   console.log("Writing to cache");
-  await writeCache(CACHE_KEY, acc);
+  await loaders.id_win_rate.write(acc);
 };
 
 export const registerMetadataIdWinRate = (program: Command) => {

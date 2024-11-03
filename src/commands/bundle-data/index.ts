@@ -1,29 +1,18 @@
 import type { Command } from "commander";
-import { loadCommanderData, loadDecklist } from "@/lib/data";
-import { extractMoxfieldId } from "@/lib/moxfield";
-import { bundleDataKey, decklistKey } from "@/lib/cache-keys";
-import {
-  loadCardListMap,
-  loadIdWinRate,
-  loadValidLists,
-} from "@/lib/cache-load";
-import { writeCache } from "@/lib/cache";
-import { checkCacheKeysExit } from "@/lib/check-cache-keys-exit";
+import { buildLoaders } from "@/lib/cache-load";
 
 export const bundleData = async (
   commander_name: string,
   { skipCache }: { skipCache?: boolean },
 ) => {
-  const CACHE_KEY = bundleDataKey(commander_name);
-
-  await checkCacheKeysExit(skipCache, CACHE_KEY);
+  const loaders = buildLoaders(commander_name);
 
   const cardData: Record<string, { contains: number; excludes: number }> = {};
-  const idWinRate = await loadIdWinRate(commander_name);
+  const idWinRate = await loaders.id_win_rate.read();
 
-  const validIdsSet = new Set(await loadValidLists(commander_name));
+  const validIdsSet = new Set(await loaders.valid_ids.read());
 
-  const cardListMap = await loadCardListMap(commander_name);
+  const cardListMap = await loaders.card_list_map.read();
 
   const calcSetAverage = (ids: Set<string>) => {
     const numbers = [...ids].map((id) => idWinRate[id]);
@@ -44,8 +33,7 @@ export const bundleData = async (
       excludes: calcSetAverage(excludesCard),
     };
   }
-
-  await writeCache(CACHE_KEY, {
+  await loaders.bundle_data.write({
     averageWinRate,
     totalEntries: count,
     cardData,

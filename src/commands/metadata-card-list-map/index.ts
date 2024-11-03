@@ -1,22 +1,21 @@
 import { Command } from "commander";
-import { checkCache, writeCache } from "@/lib/cache";
-import { cardListMapKey } from "@/lib/cache-keys";
-import { loadALlCards, loadDecklist, loadValidLists } from "@/lib/cache-load";
-import { checkCacheKeysExit } from "@/lib/check-cache-keys-exit";
+import { buildLoaders } from "@/lib/cache-load";
 
 export const metadataCardListMap = async (
   commander_name: string,
   { skipCache }: { skipCache?: boolean },
 ) => {
+  const loaders = buildLoaders(commander_name);
   console.log(`Building card list map for ${commander_name}`);
   console.log("Checking cache...");
-  const CACHE_KEY = cardListMapKey(commander_name);
 
-  checkCacheKeysExit(skipCache, CACHE_KEY);
+  if (skipCache && (await loaders.card_list_map.check())) {
+    process.exit();
+  }
 
   console.log("Building object for all cards...");
-  const allCards = await loadALlCards(commander_name);
-  const lists = await loadValidLists(commander_name);
+  const allCards = await loaders.all_cards.read(); //loadAllCards(commander_name);
+  const lists = await loaders.valid_ids.read();
 
   const map: Record<string, string[]> = {};
 
@@ -25,13 +24,17 @@ export const metadataCardListMap = async (
   }
 
   for (const list of lists) {
-    const cards = await loadDecklist(commander_name, list);
+    const cards = await loaders.deck_list.read(list);
 
     for (const card of cards) {
-      map[card].push(list);
+      try {
+        map[card].push(list);
+      } catch {
+        console.log(card);
+      }
     }
   }
-  await writeCache(CACHE_KEY, map);
+  await loaders.card_list_map.write(map);
 };
 
 export const registerMetadataCardListMap = (program: Command) => {

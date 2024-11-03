@@ -1,17 +1,16 @@
 import type { Command } from "commander";
-import { checkCache, readCache, writeCache } from "@/lib/cache";
 import { extractMoxfieldId, validDecklistUrl } from "@/lib/moxfield";
 import { getList } from "@/lib/playwright";
-import { commanderDataKey, decklistKey } from "@/lib/cache-keys";
+import { buildLoaders } from "@/lib/cache-load";
 
 export const fetchDecklists = async (commander_name: string) => {
-  const commanderDataCacheKey = commanderDataKey(commander_name);
+  const loader = buildLoaders(commander_name);
 
-  if (!(await checkCache(commanderDataCacheKey))) {
+  if (!(await loader.commander_data.check())) {
     console.log("Data missing, you need to run load-data-for-commander");
     return;
   }
-  const commanderData = JSON.parse(await readCache(commanderDataCacheKey));
+  const commanderData = await loader.commander_data.read();
   console.log("Starting load");
   for (const [index, { decklist: decklistUrl }] of commanderData.entries()) {
     if (!validDecklistUrl(decklistUrl)) {
@@ -20,9 +19,7 @@ export const fetchDecklists = async (commander_name: string) => {
     console.group(`Fetching ${index}`);
 
     const id = extractMoxfieldId(decklistUrl);
-    const DECKLIST_CACHE_KEY = decklistKey(commander_name, id);
-    const decklistExists = await checkCache(DECKLIST_CACHE_KEY);
-    if (decklistExists) {
+    if (await loader.deck_list.check(id)) {
       console.log(`Cache hit for ${id}`);
       console.groupEnd();
       continue;
@@ -31,7 +28,7 @@ export const fetchDecklists = async (commander_name: string) => {
     const decklist = await getList(decklistUrl);
     if (decklist) {
       console.log("Writing to cache");
-      await writeCache(DECKLIST_CACHE_KEY, decklist);
+      await loader.deck_list.write(decklist, id);
     }
     console.groupEnd();
   }

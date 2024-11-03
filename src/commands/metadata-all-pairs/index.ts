@@ -1,30 +1,17 @@
 import { Command } from "commander";
-import { allPairsKey } from "@/lib/cache-keys";
-import { checkCache, writeCache } from "@/lib/cache";
-import { loadALlCards, loadUncommonCards } from "@/lib/cache-load";
-
-const cacheFlow = async (skipCache: boolean | undefined, ...keys: string[]) => {
-  if (skipCache) {
-    return;
-  }
-  console.log("Checking cache...");
-  const allKeys = await Promise.all(keys.map(checkCache));
-
-  if (allKeys.every((a) => a)) {
-    console.log("Data cached.");
-    process.exit();
-  }
-};
+import { buildLoaders } from "@/lib/cache-load";
 
 export const metadataAllPairs = async (
   commander_name: string,
   { skipCache }: { skipCache?: boolean },
 ): Promise<void> => {
+  const loaders = buildLoaders(commander_name);
   console.log(`Building set of all pairs of cards for ${commander_name}`);
-  const CACHE_KEY = allPairsKey(commander_name);
 
-  cacheFlow(skipCache, CACHE_KEY);
-  const uncommonCards = await loadUncommonCards(commander_name);
+  if (skipCache && (await loaders.all_pairs.check())) {
+    process.exit();
+  }
+  const uncommonCards = await loaders.uncommon_cards.read();
 
   const length = uncommonCards.length;
 
@@ -36,7 +23,7 @@ export const metadataAllPairs = async (
   }
 
   console.log(`Writing all ${pairs.length} pairs.`);
-  await writeCache(CACHE_KEY, pairs);
+  await loaders.all_pairs.write(pairs);
 };
 
 export const registerMetadataAllPairs = (program: Command) => {

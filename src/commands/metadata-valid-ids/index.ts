@@ -1,32 +1,28 @@
 import { Command } from "commander";
-import { checkCache, readCache, writeCache } from "@/lib/cache";
-import {
-  allCardsKey,
-  decklistKey,
-  idWinRateKey,
-  validIdsKey,
-} from "@/lib/cache-keys";
-import { loadALlCards, loadAllLists, loadDecklist } from "@/lib/cache-load";
-import { checkCacheKeysExit } from "@/lib/check-cache-keys-exit";
+import { buildLoaders } from "@/lib/cache-load";
 
 export const metadataValidIds = async (
   commander_name: string,
   { skipCache }: { skipCache?: boolean },
 ) => {
+  const loaders = buildLoaders(commander_name);
   console.log(`Building list of valid ids ${commander_name}`);
   console.log("Checking cache...");
-  const CACHE_KEY = validIdsKey(commander_name);
-  checkCacheKeysExit(skipCache, CACHE_KEY);
-  const allLists = await loadAllLists(commander_name);
+
+  if (skipCache && (await loaders.valid_ids.check())) {
+    process.exit();
+  }
+
+  const allLists = Object.keys(await loaders.id_win_rate.read());
 
   const validLists: string[] = [];
   for (const list of allLists) {
-    if (await checkCache(decklistKey(commander_name, list))) {
+    if (await loaders.deck_list.check(list)) {
       validLists.push(list);
     }
   }
 
-  await writeCache(validIdsKey(commander_name), validLists);
+  await loaders.valid_ids.write(validLists);
 };
 
 export const registerMetadataValidIds = (program: Command) => {

@@ -6,7 +6,7 @@ const getMedian = <T>(data: T[], extract: (datum: T) => number): number => {
   return extract(data[mid]);
 };
 
-const getQuartiles = <T>(
+export const getQuartiles = <T>(
   data: T[],
   extract: (datum: T) => number,
 ): { Q1: number; Q3: number } => {

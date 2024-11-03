@@ -1,34 +1,22 @@
 import { Command } from "commander";
-import { checkCache, writeCache } from "@/lib/cache";
-import {
-  cardListMapKey,
-  commonCardsKey,
-  uncommonCardsKey,
-} from "@/lib/cache-keys";
-import {
-  loadALlCards,
-  loadAllLists,
-  loadCardListMap,
-  loadDecklist,
-  loadValidLists,
-} from "@/lib/cache-load";
-import { checkCacheKeysExit } from "@/lib/check-cache-keys-exit";
+import { buildLoaders } from "@/lib/cache-load";
 
-export const metadataUncommonCards = async (
-  commander_name: string,
-  { skipCache }: { skipCache?: boolean },
-) => {
+export const metadataUncommonCards = async (commander_name: string) => {
+  const loaders = buildLoaders(commander_name);
   console.log(
     `Building lists of common and uncommon cards for ${commander_name}`,
   );
 
-  const UNCOMMON_CACHE_KEY = uncommonCardsKey(commander_name);
-  const COMMON_CACHE_KEY = commonCardsKey(commander_name);
-  await checkCacheKeysExit(false, UNCOMMON_CACHE_KEY, COMMON_CACHE_KEY);
+  if (
+    (await loaders.uncommon_cards.check()) &&
+    (await loaders.common_cards.check())
+  ) {
+    process.exit();
+  }
 
-  const cardListMap = await loadCardListMap(commander_name);
+  const cardListMap = await loaders.all_cards.read();
 
-  const validIds = await loadValidLists(commander_name);
+  const validIds = await loaders.valid_ids.read();
 
   const commonCards: string[] = [];
   const uncommonCards: string[] = [];
@@ -40,8 +28,8 @@ export const metadataUncommonCards = async (
     }
   }
 
-  await writeCache(COMMON_CACHE_KEY, commonCards);
-  await writeCache(UNCOMMON_CACHE_KEY, uncommonCards);
+  await loaders.uncommon_cards.write(uncommonCards);
+  await loaders.common_cards.write(commonCards);
 };
 
 export const registerMetadataUncommonCards = (program: Command) => {
