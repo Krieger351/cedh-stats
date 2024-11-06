@@ -1,27 +1,5 @@
-import { checkCache, readCache, writeCache } from "@/lib/cache";
+import { checkCache, readCache, writeCache } from "@/lib/cache_";
 import { buildKeyStore } from "@/lib/cache-keys";
-//
-// export const loadAllCards = async (commander_name: string) =>
-//   JSON.parse(await readCache(allCardsKey(commander_name))) as string[];
-//
-// export const loadUncommonCards = async (commander_name: string) =>
-//   JSON.parse(await readCache(uncommonCardsKey(commander_name))) as ;
-//
-// export const loadCardListMap = async (commander_name: string) =>
-//   JSON.parse(await readCache(cardListMapKey(commander_name))) as Record<
-//     string,
-//     string[]
-//   >;
-// export const loadIdWinRate = async (commander_name: string) =>
-//   JSON.parse(await readCache(idWinRateKey(commander_name))) as Record<
-//     string,
-//     number
-//   >;
-//
-// export const loadDeckAverage = async (commander_name: string) =>
-//   JSON.parse(await readCache(winrateCommanderAverage(commander_name))) as {
-//     winrate_data: number;
-//   };
 
 const buildLoader = <T, K extends (...args: any) => any>(keyBuilder: K) => ({
   read: async (...params: Parameters<K>): Promise<T> =>

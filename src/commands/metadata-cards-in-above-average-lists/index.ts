@@ -29,8 +29,28 @@ export const metadataCardsInAboveAverageDecks = async (
     }
   }
 
-  console.log(set_of_above_average_decks.size);
-  console.log(cards_in_above_average_decks);
+  const set_of_common = new Set<string>();
+  const number_of_above_average_decks = set_of_above_average_decks.size;
+  cards_in_above_average_decks.forEach((value, card) => {
+    if (value === number_of_above_average_decks) {
+      set_of_common.add(card);
+      cards_in_above_average_decks.delete(card);
+    }
+  });
+
+  const cards_not_in_all_above_average_decks = Array.from(
+    cards_in_above_average_decks.entries(),
+  );
+
+  console.log(`
+Common Cards: (${set_of_common.size})
+============
+${Array.from(set_of_common.values()).join("\n")}
+  
+Uncommon Cards: (${cards_not_in_all_above_average_decks.length})
+==============
+${Array.from(cards_not_in_all_above_average_decks.entries().map(([_, [card]]) => card)).join("\n")}
+`);
 };
 
 export const registerMetadataCardsInAboveAverageDecks = (program: Command) => {

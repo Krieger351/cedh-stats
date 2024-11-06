@@ -1,7 +1,7 @@
 import type { Command } from "commander";
 import { loadCommanderData, loadDecklist } from "@/lib/data";
 import { extractMoxfieldId, validDecklistUrl } from "@/lib/moxfield";
-import { checkCache, readCache, writeCache } from "@/lib/cache";
+import { checkCache, readCache, writeCache } from "@/lib/cache_";
 
 export const metadataAllCards = async (commander_name: string) => {
   console.log(`Building full list of cards for ${commander_name}`);

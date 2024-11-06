@@ -1,7 +1,7 @@
 import type { Command } from "commander";
 import { graphql } from "@/graphql/gql.js";
 import { execute } from "@/graphql/execute.js";
-import { checkCache, writeCache } from "@/lib/cache";
+import { checkCache, writeCache } from "@/lib/cache_";
 
 const CACHE_KEY = "top-commanders.json";
 const query = graphql(`
