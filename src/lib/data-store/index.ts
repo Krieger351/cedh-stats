@@ -155,7 +155,7 @@ export const buildDataStore = function (commander_name: string) {
         for (const card of all_cards) {
           if (
             (card_list_map.get(card)?.intersection(ids_top_decks).size || 0) >=
-            (offset >= 1 ? offset : ids_top_decks.size * offset)
+            (offset > 1 ? offset : ids_top_decks.size * offset)
           ) {
             cards_in_top_decks.add(card);
           }
