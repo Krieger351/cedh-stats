@@ -20,7 +20,7 @@ const build_wrap =
       if (await cache.check(string_key)) {
         return await cache.read(string_key, decode);
       }
-      const data = await get_data();
+      const data = await get_data(...params);
       await cache.write(string_key, data, encode);
       return data;
     };
@@ -28,19 +28,20 @@ const build_wrap =
     wrapFunction.skip = get_data;
     return wrapFunction;
   };
+
 export const buildDataStore = function (commander_name: string) {
   const cache = buildCache(commander_name);
   const wrap = build_wrap(cache);
 
   const store = {
-    commander_data: wrap(
-      "commander-data",
+    commander_entries: wrap(
+      "commander-entries",
       async () => await fetchCommanderData(commander_name),
     ),
     id_win_rate: wrap(
       "meta/id-win-rate",
       async () => {
-        const commanderData = await store.commander_data();
+        const commanderData = await store.commander_entries();
         const id_win_rate = transformIdWinRate(commanderData);
         return id_win_rate;
       },
@@ -146,7 +147,7 @@ export const buildDataStore = function (commander_name: string) {
       (string) => new Set(JSON.parse(string)),
     ),
     cards_in_top_decks: wrap(
-      "meta/cards-in-top-decks",
+      (offset = 5) => `meta/cards-in-top-decks-${offset}`,
       async (offset = 5) => {
         const ids_top_decks = await store.ids_top_decks();
         const card_list_map = await store.card_list_map();

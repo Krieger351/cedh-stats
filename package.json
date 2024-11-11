@@ -5,20 +5,9 @@
   "description": "",
   "main": "src/main.ts",
   "scripts": {
-    "fetch-top-commanders": "node --import @swc-node/register/esm-register src/main.ts fetch-top-commanders",
-    "fetch-commander-entries": "node --import @swc-node/register/esm-register src/main.ts fetch-commander-entries \"Thrasios, Triton Hero / Tymna the Weaver\"",
-    "fetch-decklists": "node --import @swc-node/register/esm-register src/main.ts fetch-decklists \"Thrasios, Triton Hero / Tymna the Weaver\"",
-    "metadata-id-win-rate-map": "node --import @swc-node/register/esm-register src/main.ts metadata-id-win-rate-map --skip-cache \"Thrasios, Triton Hero / Tymna the Weaver\"",
-    "metadata-all-cards": "node --import @swc-node/register/esm-register src/main.ts metadata-all-cards \"Thrasios, Triton Hero / Tymna the Weaver\"",
-    "metadata-card-list-map": "node --import @swc-node/register/esm-register src/main.ts metadata-card-list-map \"Thrasios, Triton Hero / Tymna the Weaver\"",
-    "metadata-valid-ids": "node --import @swc-node/register/esm-register src/main.ts metadata-valid-ids --skip-cache \"Thrasios, Triton Hero / Tymna the Weaver\"",
-    "metadata-all-pairs": "node --import @swc-node/register/esm-register src/main.ts metadata-all-pairs --skip-cache \"Thrasios, Triton Hero / Tymna the Weaver\"",
-    "metadata-uncommon-cards": "node --import @swc-node/register/esm-register src/main.ts metadata-uncommon-cards \"Thrasios, Triton Hero / Tymna the Weaver\"",
-    "metadata-winrate-uncommon-cards": "node --import @swc-node/register/esm-register src/main.ts metadata-winrate-uncommon-cards \"Thrasios, Triton Hero / Tymna the Weaver\"",
-    "metadata-winrate-commander-average": "node --import @swc-node/register/esm-register src/main.ts metadata-winrate-commander-average \"Thrasios, Triton Hero / Tymna the Weaver\"",
-    "metadata-cards-in-above-average-decks": "node --import @swc-node/register/esm-register src/main.ts metadata-cards-in-above-average-decks \"Thrasios, Triton Hero / Tymna the Weaver\"",
     "prefetch-data": "node --import @swc-node/register/esm-register src/main.ts prefetch-data \"Thrasios, Triton Hero / Tymna the Weaver\"",
-    "bundle-data": "node --import @swc-node/register/esm-register src/main.ts bundle-data --skip-cache \"Thrasios, Triton Hero / Tymna the Weaver\"",
+    "data:Yuriko": "node --import @swc-node/register/esm-register src/main.ts prefetch-data \"Yuriko, the Tiger's Shadow\"",
+
     "codegen": "graphql-codegen --config codegen.ts"
   },
   "author": "",

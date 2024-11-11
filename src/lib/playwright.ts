@@ -2,7 +2,7 @@ import { chromium } from "playwright";
 import { parseList } from "@/lib/moxfield";
 
 export const getList = async (url: string) => {
-  const browser = await chromium.launch({ headless: false });
+  const browser = await chromium.launch({ headless: true });
 
   const context = await browser.newContext();
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);

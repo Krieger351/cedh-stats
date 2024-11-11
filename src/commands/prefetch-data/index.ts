@@ -6,15 +6,19 @@ import { standardDeviation } from "@/lib/statistics/standard-deviation";
 const prefetchData = async (commander_name: string) => {
   const store = buildDataStore(commander_name);
 
-  await store.commander_data();
+  console.log("commander_entries");
+  await store.commander_entries();
+  console.log("id_win_rate");
   const id_win_rate = await store.id_win_rate();
 
-  for (const id of id_win_rate.keys()) {
+  console.group("Loading Lists");
+  for (const [id] of id_win_rate) {
+    process.stdout.write(`Current List: ${id}`);
     await store.decklist(id);
+    process.stdout.clearLine(0);
+    process.stdout.cursorTo(0);
   }
-
-  console.log(await store.cards_in_top_decks.skip(0.5));
-  // const card_list_map = await store.card_list_map();
+  console.groupEnd();
 };
 export const registerPrefetchData = (program: Command) => {
   program
