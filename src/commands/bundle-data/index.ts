@@ -42,7 +42,7 @@ export const bundleData = async (
 
 export const registerBundleData = (program: Command) => {
   program
-    .command("bundle-data")
+    .command("bundle-data-store")
     .option("--skip-cache")
     .argument("<commander_name>")
     .action(bundleData);

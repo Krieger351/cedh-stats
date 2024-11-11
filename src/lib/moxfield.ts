@@ -19,3 +19,6 @@ export const extractMoxfieldId = (url: string): string =>
 
 export const validDecklistUrl = (url: unknown): url is string =>
   typeof url === "string" && !url.includes("compare");
+
+export const buildDecklistUrl = (id: string): string =>
+  `https://www.moxfield.com/decks/${id}`;

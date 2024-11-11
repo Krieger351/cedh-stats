@@ -17,6 +17,7 @@
     "metadata-winrate-uncommon-cards": "node --import @swc-node/register/esm-register src/main.ts metadata-winrate-uncommon-cards \"Thrasios, Triton Hero / Tymna the Weaver\"",
     "metadata-winrate-commander-average": "node --import @swc-node/register/esm-register src/main.ts metadata-winrate-commander-average \"Thrasios, Triton Hero / Tymna the Weaver\"",
     "metadata-cards-in-above-average-decks": "node --import @swc-node/register/esm-register src/main.ts metadata-cards-in-above-average-decks \"Thrasios, Triton Hero / Tymna the Weaver\"",
+    "prefetch-data": "node --import @swc-node/register/esm-register src/main.ts prefetch-data \"Thrasios, Triton Hero / Tymna the Weaver\"",
     "bundle-data": "node --import @swc-node/register/esm-register src/main.ts bundle-data --skip-cache \"Thrasios, Triton Hero / Tymna the Weaver\"",
     "codegen": "graphql-codegen --config codegen.ts"
   },

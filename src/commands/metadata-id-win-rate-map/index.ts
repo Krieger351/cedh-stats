@@ -14,7 +14,7 @@ export const metadataIdWinRate = async (
     process.exit();
   }
 
-  console.log("Loading commander data");
+  console.log("Loading commander data-store");
   const commanderData = await loadCommanderData(commander_name);
   console.log("Building map");
   const acc: Record<string, number> = {};

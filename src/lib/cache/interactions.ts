@@ -13,16 +13,13 @@ export const check = async (cacheId: string): Promise<boolean> => {
   return true;
 };
 
-export const write = async (cacheId: string, data: unknown): Promise<void> => {
+export const write = async (cacheId: string, data: string): Promise<void> => {
   const filePath = path.resolve(cachePath, cacheId);
   const dirname = path.dirname(filePath);
 
   await fs.mkdir(dirname, { recursive: true });
 
-  await fs.writeFile(
-    filePath,
-    await prettier.format(JSON.stringify(data), { parser: "json" }),
-  );
+  await fs.writeFile(filePath, await prettier.format(data, { parser: "json" }));
 };
 
 export const read = async (cacheId: string): Promise<string> => {

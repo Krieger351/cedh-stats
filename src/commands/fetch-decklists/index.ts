@@ -7,7 +7,7 @@ export const fetchDecklists = async (commander_name: string) => {
   const loader = buildLoaders(commander_name);
 
   if (!(await loader.commander_data.check())) {
-    console.log("Data missing, you need to run load-data-for-commander");
+    console.log("Data missing, you need to run load-data-store-for-commander");
     return;
   }
   const commanderData = await loader.commander_data.read();
