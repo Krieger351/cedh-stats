@@ -4,6 +4,28 @@ import { fetchDecklist } from "@/lib/data-store/decklist";
 import { transformIdWinRate } from "@/lib/data-store/id-win-rate";
 import { getQuartiles } from "@/lib/filter-outliers";
 
+const winRateAverage = (
+  id_win_rate: Map<string, number>,
+  lists: Set<string>,
+) => {
+  let acc = 0;
+  for (const list of lists) {
+    acc = acc + (id_win_rate.get(list) || 0);
+  }
+  return acc / lists.size;
+};
+
+const winRatePerCard = (
+  id_win_rate: Map<string, number>,
+  card_list_map: Map<string, Set<string>>,
+) => {
+  const win_rate_per_card = new Map<string, number>();
+  for (const [card, lists] of card_list_map) {
+    win_rate_per_card.set(card, winRateAverage(id_win_rate, lists));
+  }
+  return win_rate_per_card;
+};
+
 type StringOrFunction<T extends (...args: any) => string> = string | T;
 const build_wrap =
   (cache: ReturnType<typeof buildCache>) =>
