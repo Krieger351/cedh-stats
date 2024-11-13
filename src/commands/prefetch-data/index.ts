@@ -1,13 +1,11 @@
 import { Command } from "commander";
 import { buildDataStore } from "@/lib/data-store";
-import { mean } from "@/lib/statistics/mean";
-import { standardDeviation } from "@/lib/statistics/standard-deviation";
 
 const prefetchData = async (commander_name: string) => {
   const store = buildDataStore(commander_name);
 
   console.log("commander_entries");
-  await store.commander_entries();
+  await store.commander_entries.skip();
   console.log("id_win_rate");
   const id_win_rate = await store.id_win_rate();
 

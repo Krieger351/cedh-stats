@@ -8,13 +8,20 @@ export async function execute<TResult, TVariables>(
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Accept: "application/graphql-response+json",
+      // Accept: "application/graphql-response+json",
     },
     body: JSON.stringify({
       query: query,
       variables,
     }),
   });
+
+  console.log(
+    JSON.stringify({
+      query: query,
+      variables,
+    }),
+  );
 
   if (!response.ok) {
     throw new Error("Network response was not ok");

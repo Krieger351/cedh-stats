@@ -18,10 +18,18 @@ const winRateAverage = (
 const winRatePerCard = (
   id_win_rate: Map<string, number>,
   card_list_map: Map<string, Set<string>>,
+  card_list: Set<string>,
+  lists: Set<string>,
 ) => {
   const win_rate_per_card = new Map<string, number>();
-  for (const [card, lists] of card_list_map) {
-    win_rate_per_card.set(card, winRateAverage(id_win_rate, lists));
+  for (const card of card_list) {
+    win_rate_per_card.set(
+      card,
+      winRateAverage(
+        id_win_rate,
+        lists.intersection(card_list_map.get(card) || new Set<string>()),
+      ),
+    );
   }
   return win_rate_per_card;
 };
@@ -225,6 +233,27 @@ export const buildDataStore = function (commander_name: string) {
           ),
         ),
     ),
+    winrate_cards_in_top_decks: wrap(
+      "meta/winrate_cards_in_top_decks",
+      async () => {
+        const win_rate_per_card = winRatePerCard(
+          await store.id_win_rate(),
+          await store.card_list_map(),
+          await store.cards_in_top_decks(),
+          await store.ids_top_decks(),
+        );
+        return win_rate_per_card;
+      },
+      (data) => JSON.stringify(Object.fromEntries(data.entries())),
+      (string) => new Map<string, number>(Object.entries(JSON.parse(string))),
+    ),
+    winrate_top_decks: wrap("meta/winrate-top-decks", async () => {
+      const ids_top_decks = await store.ids_top_decks();
+      const id_win_rate = await store.id_win_rate();
+
+      const winrate_top_decks = winRateAverage(id_win_rate, ids_top_decks);
+      return winrate_top_decks;
+    }),
   };
   return store;
 };

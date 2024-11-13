@@ -7,6 +7,9 @@
   "scripts": {
     "prefetch-data": "node --import @swc-node/register/esm-register src/main.ts prefetch-data \"Thrasios, Triton Hero / Tymna the Weaver\"",
     "data:Yuriko": "node --import @swc-node/register/esm-register src/main.ts prefetch-data \"Yuriko, the Tiger's Shadow\"",
+    "Yuriko:cards-in-best-decks": "node --import @swc-node/register/esm-register src/main.ts cards-in-best-decks \"Yuriko, the Tiger's Shadow\"",
+    "Kinnan:data": "node --import @swc-node/register/esm-register src/main.ts prefetch-data \"Kinnan, Bonder Prodigy\"",
+    "Kinnan:cards-in-best-decks": "node --import @swc-node/register/esm-register src/main.ts cards-in-best-decks \"Kinnan, Bonder Prodigy\"",
 
     "codegen": "graphql-codegen --config codegen.ts"
   },
