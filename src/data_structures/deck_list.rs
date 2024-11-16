@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::hash_set::Iter;
 use std::collections::HashSet;
 
-#[derive(Serialize, Deserialize, Debug, Clone, Default)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct DeckList(HashSet<Card>);
 
 impl IntoIterator for DeckList {
@@ -28,8 +28,8 @@ impl Extend<Card> for DeckList {
 }
 
 impl DeckList {
-    pub fn new(list: HashSet<Card>) -> Self {
-        DeckList(list)
+    pub fn new() -> Self {
+        DeckList(HashSet::new())
     }
 
     pub fn into_hash_set(self) -> HashSet<Card> {
@@ -38,5 +38,9 @@ impl DeckList {
 
     pub fn iter(&self) -> Iter<'_, Card> {
         self.0.iter()
+    }
+
+    pub fn len(&self) -> usize {
+        self.0.len()
     }
 }

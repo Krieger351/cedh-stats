@@ -1,4 +1,4 @@
-use crate::data_structures::Entries;
+use crate::data_structures::{Commander, Entries};
 use crate::store::Store;
 use anyhow::Result;
 use reqwest;
@@ -21,7 +21,7 @@ struct SerdeResponse {
 }
 
 
-async fn fetch_commander_entries(commander_name: &str) -> Result<Entries> {
+async fn fetch_commander_entries(commander_name: &Commander) -> Result<Entries> {
     let client = reqwest::Client::new();
 
     let body = json!({
@@ -45,7 +45,9 @@ impl Store {
         if let Ok(data) = self.cache.read_commander("commander-entries").await {
             Ok(data)
         } else {
+            println!("here 3");
             let data = fetch_commander_entries(&self.commander_name).await?;
+            println!("here 4");
             self.cache.write_commander("commander-entries", &data).await?;
             Ok(data)
         }

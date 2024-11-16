@@ -1,5 +1,6 @@
 use crate::data_structures::{Card, DeckId};
 use serde::{Deserialize, Serialize};
+use std::collections::hash_map::Iter;
 use std::collections::{HashMap, HashSet};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -16,5 +17,9 @@ impl CardListIdMap {
 
     pub fn get_mut(&mut self, k: &Card) -> Option<&mut HashSet<DeckId>> {
         self.0.get_mut(k)
+    }
+
+    pub fn iter(&self) -> Iter<'_, Card, HashSet<DeckId>> {
+        self.0.iter()
     }
 }

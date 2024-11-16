@@ -23,4 +23,8 @@ impl IdDeckListMap {
     pub fn keys(&self) -> Keys<'_, DeckId, DeckList> {
         self.0.keys()
     }
+
+    pub fn get(&self, id: &DeckId) -> Option<&DeckList> {
+        self.0.get(id)
+    }
 }

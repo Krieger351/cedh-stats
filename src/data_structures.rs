@@ -6,9 +6,11 @@ mod card;
 mod deck_id;
 mod card_list_id_map;
 mod id_win_rate;
+mod commander;
 
 pub use card::Card;
 pub use card_list_id_map::CardListIdMap;
+pub use commander::Commander;
 pub use deck_id::DeckId;
 pub use deck_list::DeckList;
 pub use entries::Entries;

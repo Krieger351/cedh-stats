@@ -2,8 +2,9 @@ mod command;
 mod store;
 mod cache;
 mod moxfield;
-mod data_utils;
 mod data_structures;
+use crate::data_structures::Commander;
+use anyhow::Result;
 use clap::Parser;
 use command::Command;
 use store::Store;
@@ -17,9 +18,11 @@ struct Cli {
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<()> {
     let args = Cli::parse();
-    let store = Store::new(&args.commander);
-    Command::exec(args.command, &store).await;
+    if let Ok(store) = Store::new(&Commander::from_string(args.commander)).await {
+        Command::exec(args.command, &store).await?;
+    }
+    Ok(())
 }
 

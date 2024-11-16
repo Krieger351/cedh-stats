@@ -4,12 +4,10 @@ use anyhow::Result;
 use std::collections::HashSet;
 
 impl Store {
-    pub async fn card_list_map(self: &Self) -> Result<CardListIdMap> {
-        if let Ok(data) = self.cache.read_commander("meta/card_list_map").await {
+    pub async fn card_list_id_map(self: &Self) -> Result<CardListIdMap> {
+        if let Ok(data) = self.cache.read_commander("meta/card_list_id_map").await {
             Ok(data)
         } else {
-            let all_cards = self.all_cards().await?;
-
             let mut card_list_map = CardListIdMap::new();
             let ids = self.id_deck_list_map().await?;
 

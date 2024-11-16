@@ -7,6 +7,7 @@ impl Store {
         if let Ok(data) = self.cache.read_commander("meta/id_win_rate").await {
             Ok(data)
         } else {
+            println!("here 2");
             let entries = self.commander_entries().await?;
             let mut data = IdWinRate::new();
 

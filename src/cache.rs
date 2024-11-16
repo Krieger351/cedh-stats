@@ -1,13 +1,15 @@
+use crate::data_structures::Commander;
 use anyhow::Result;
 use serde::de;
 use serde::ser;
 use std::path::Path;
+
 pub struct Cache {
-    commander_name: String,
+    commander_name: Commander,
 }
 
 impl Cache {
-    pub fn new(commander_name: &String) -> Cache {
+    pub fn new(commander_name: &Commander) -> Cache {
         Cache {
             commander_name: commander_name.clone()
         }
@@ -17,7 +19,7 @@ impl Cache {
         format!(".cache/{}.json", key)
     }
     fn full_commander_key(self: &Self, key: &str) -> String {
-        self.full_key(&format!("{}/{}", self.commander_name.to_lowercase().replace(&['(', ')', ',', '\"', '.', ';', ':', '\'', '/', '\\'][..], "").replace(" ", "_"), key.to_string()))
+        self.full_key(&format!("{}/{}", self.commander_name, key.to_string()))
     }
 
     async fn internal_read<T: for<'a> de::Deserialize<'a>>(self: &Self, key: &str) -> Result<T> {
@@ -33,7 +35,7 @@ impl Cache {
     pub async fn read<T: for<'a> de::Deserialize<'a>>(self: &Self, key: &str) -> Result<T> {
         self.internal_read::<T>(&self.full_key(key)).await
     }
-
+ 
     async fn internal_write<T: ser::Serialize>(self: &Self, key: &str, data: T) -> Result<()> {
         let data_string = serde_json::to_string_pretty::<T>(&data)?;
         tokio::fs::create_dir_all(Path::new(&key).parent().unwrap()).await?;
