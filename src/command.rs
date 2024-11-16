@@ -17,7 +17,7 @@ pub enum Command {
 impl Command {
     pub async fn exec(cmd: Command, store: &Store) -> anyhow::Result<()> {
         match cmd {
-            Command::Prefetch => prefetch::exec(store).await,
+            Command::Prefetch => prefetch::exec(store).await?,
             Command::Work => work::exec(store).await,
             Command::WinRatePerCard => win_rate_per_card::exec(store).await,
             Command::CardsInTopDecks { name } => cards_in_top_decks::exec(store, name).await?
