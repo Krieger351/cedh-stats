@@ -1,18 +1,19 @@
 mod command;
 mod store;
 mod cache;
-
-use command::Command;
-
+mod moxfield;
+mod data_utils;
+mod data_structures;
 use clap::Parser;
-use crate::store::Store;
+use command::Command;
+use store::Store;
 
 #[derive(Parser)]
 #[command(version)]
 struct Cli {
     commander: String,
     #[clap(subcommand)]
-    command: Command
+    command: Command,
 }
 
 #[tokio::main]
@@ -21,3 +22,4 @@ async fn main() {
     let store = Store::new(&args.commander);
     Command::exec(args.command, &store).await;
 }
+

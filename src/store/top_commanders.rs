@@ -25,11 +25,11 @@ async fn fetch_top_commanders() -> Result<Vec<String>> {
 
 impl Store {
     pub async fn top_commanders(self: &Self) -> Result<Vec<String>> {
-        if let Ok(data) = self.cache.read("top-commanders".to_string()).await {
+        if let Ok(data) = self.cache.read("top-commanders").await {
             Ok(data)
         } else {
             let data = fetch_top_commanders().await?;
-            self.cache.write("top_commanders".to_string(), &data).await?;
+            self.cache.write("top_commanders", &data).await?;
             Ok(data)
         }
     }
