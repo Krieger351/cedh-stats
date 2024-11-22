@@ -1,23 +1,24 @@
-use crate::data_structures::IdWinRate;
+use crate::cache::{Cacheable, CommanderCache};
+use crate::data_types::deck_id_win_rate_map::DeckIdWinRateMap;
 use crate::store::Store;
 use anyhow::Result;
 
-impl Store {
-    pub async fn id_win_rate(self: &Self) -> Result<IdWinRate> {
-        if let Ok(data) = self.cache.read_commander("meta/id_win_rate").await {
-            Ok(data)
-        } else {
-            println!("here 2");
-            let entries = self.commander_entries().await?;
-            let mut data = IdWinRate::new();
+struct DeckIdWinRateMapReader<'a>(&'a Store<'a>);
 
-            for entry in entries.iter() {
-                if entry.is_valid() {
-                    data.insert(entry.get_id().unwrap(), entry.win_rate.clone().unwrap());
-                }
-            }
-            self.cache.write_commander("meta/id_win_rate", &data).await?;
-            Ok(data)
-        }
+impl Cacheable<'_, DeckIdWinRateMap> for DeckIdWinRateMapReader<'_> {
+    type C<'c> = CommanderCache<'c>;
+
+    async fn compute(&self) -> Result<DeckIdWinRateMap> {
+        Ok(self.0.all_commander_entries().await?.into_deck_entry_list().into_deck_id_win_rate_map())
+    }
+
+    fn cache_file_path(&self) -> String {
+        "meta/id_win_rate".to_string()
+    }
+}
+
+impl Store<'_> {
+    pub async fn deck_id_win_rate_map(&self) -> Result<DeckIdWinRateMap> {
+        DeckIdWinRateMapReader(self).load_or_compute(&self.commander_cache).await
     }
 }

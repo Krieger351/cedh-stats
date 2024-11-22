@@ -1,17 +1,21 @@
+use crate::command::Executor;
+use crate::data_types::win_rate::WinRate;
 use crate::store::{Store, TopDeckMethod};
 
-pub async fn exec(store: &Store) {
-    let top_lists = store.top_decks(Some(TopDeckMethod::Quartile));
-    let card_list_id_map = store.card_list_id_map();
+pub struct WinRatePerCard {}
 
-    let top_lists = top_lists.await.unwrap();
-    let card_list_id_map = card_list_id_map.await.unwrap();
+impl Executor for WinRatePerCard {
+    async fn exec(&self, store: &Store<'_>) -> anyhow::Result<()> {
+        let top_lists = store.top_decks(&TopDeckMethod::default()).await?;
+        let card_list_id_map = store.card_deck_id_set_map().await?;
 
-    for (card, list) in card_list_id_map.iter() {
-        let included_win_rate = list.iter().filter_map(|x| top_lists.get(x)).collect::<Vec<&f32>>();
-        let len = included_win_rate.len();
-        if len > 5 {
-            println!("{}: {}", card, included_win_rate.into_iter().sum::<f32>() / len as f32);
+        for (card, list) in card_list_id_map.iter() {
+            let included_win_rate = list.iter().filter_map(|x| top_lists.get(x)).collect::<Vec<&WinRate>>();
+            let len = included_win_rate.len();
+            if len > 5 {
+                println!("{}: {}", card, included_win_rate.into_iter().sum::<WinRate>() / len as f64);
+            }
         }
+        Ok(())
     }
 }

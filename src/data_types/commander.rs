@@ -1,7 +1,9 @@
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
+use std::str::FromStr;
 
 #[derive(Serialize, Deserialize, Debug, Clone, Hash, PartialOrd, PartialEq, Eq)]
+#[repr(transparent)]
 pub struct Commander(String);
 
 impl Display for Commander {
@@ -10,8 +12,11 @@ impl Display for Commander {
     }
 }
 
-impl Commander {
-    pub fn from_string(string: String) -> Self {
-        Commander(string)
+
+impl FromStr for Commander {
+    type Err = String;
+
+    fn from_str(s: &str) -> anyhow::Result<Self, Self::Err> {
+        Ok(Self(s.parse().map_err(|e| format!("{e}"))?))
     }
 }

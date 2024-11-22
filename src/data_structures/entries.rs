@@ -2,6 +2,7 @@ use crate::data_structures::Entry;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
+#[repr(transparent)]
 pub struct Entries(Vec<Entry>);
 
 impl Entries {

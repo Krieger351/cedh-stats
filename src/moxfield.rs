@@ -1,6 +1,8 @@
 pub struct Moxfield {}
 
-use crate::data_structures::{Card, DeckId, DeckList};
+use crate::data_types::card::Card;
+use crate::data_types::deck_id::DeckId;
+use crate::data_types::deck_list::DeckList;
 use anyhow::Result;
 use headless_chrome::protocol::cdp::Runtime::{PropertyPreview, RemoteObject};
 use headless_chrome::{Browser, LaunchOptions};
@@ -9,7 +11,7 @@ impl Card {
     pub fn from_property_preview(property_preview: &PropertyPreview) -> Option<Self> {
         let str = property_preview.value.clone().unwrap().to_string();
         if str.len() > 0 {
-            Some(Card::new(str))
+            Some(Card::from_string(str))
         } else {
             None
         }

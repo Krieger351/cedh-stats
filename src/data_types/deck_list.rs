@@ -1,9 +1,10 @@
-use crate::data_structures::Card;
+use crate::data_types::card::Card;
 use serde::{Deserialize, Serialize};
 use std::collections::hash_set::Iter;
 use std::collections::HashSet;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+#[repr(transparent)]
 pub struct DeckList(HashSet<Card>);
 
 impl IntoIterator for DeckList {
@@ -42,5 +43,12 @@ impl DeckList {
 
     pub fn len(&self) -> usize {
         self.0.len()
+    }
+
+    pub fn intersection(&self, other: &Self) -> DeckList {
+        DeckList(self.0.intersection(&other.0).cloned().collect::<HashSet<Card>>())
+    }
+    pub fn union(&self, other: &Self) -> DeckList {
+        DeckList(self.0.union(&other.0).cloned().collect::<HashSet<Card>>())
     }
 }

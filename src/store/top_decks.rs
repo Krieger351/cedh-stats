@@ -1,4 +1,5 @@
-use crate::data_structures::IdWinRate;
+use crate::cache::{Cacheable, CommanderCache};
+use crate::data_types::deck_id_win_rate_map::DeckIdWinRateMap;
 use crate::store::Store;
 use anyhow::Result;
 use clap::ValueEnum;
@@ -11,32 +12,40 @@ pub enum TopDeckMethod {
     ZScore,
 }
 
+impl Default for TopDeckMethod {
+    fn default() -> Self {
+        Self::Percent
+    }
+}
+
 impl Display for TopDeckMethod {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "{:?}", self)
     }
 }
 
-impl Store {
-    pub async fn top_decks(&self, method: Option<TopDeckMethod>) -> Result<IdWinRate> {
-        let method = method.unwrap_or(TopDeckMethod::Percent);
-        let key = format!("meta/top_decks_{}", method).to_lowercase();
+struct TopDeckReader<'a>(&'a Store<'a>, &'a TopDeckMethod);
 
-        if let Ok(data) = self.cache.read_commander(&key).await {
-            Ok(data)
-        } else {
-            println!("here 1");
-            let ids = self.id_win_rate().await?;
+impl Cacheable<'_, DeckIdWinRateMap> for TopDeckReader<'_> {
+    type C<'c> = CommanderCache<'c>;
 
-            let top_decks = match method {
-                TopDeckMethod::Quartile => ids.into_top_decks_by_quartile(),
-                TopDeckMethod::ZScore => ids.into_top_decks_by_z_score(),
-                TopDeckMethod::Percent => ids.into_top_decks_by_percent(),
-            };
+    async fn compute(&self) -> Result<DeckIdWinRateMap> {
+        let ids = self.0.deck_id_win_rate_map().await?;
 
-            self.cache.write_commander(&key, &top_decks).await?;
+        Ok(match self.1 {
+            TopDeckMethod::Quartile => ids.into_top_decks_by_quartile(),
+            TopDeckMethod::ZScore => ids.into_top_decks_by_z_score(),
+            TopDeckMethod::Percent => ids.into_top_decks_by_percent(),
+        })
+    }
 
-            Ok(top_decks)
-        }
+    fn cache_file_path(&self) -> String {
+        format!("meta/top_decks_{}", self.1).to_lowercase()
+    }
+}
+
+impl Store<'_> {
+    pub async fn top_decks(&self, method: &TopDeckMethod) -> Result<DeckIdWinRateMap> {
+        TopDeckReader(self, method).load_or_compute(&self.commander_cache).await
     }
 }

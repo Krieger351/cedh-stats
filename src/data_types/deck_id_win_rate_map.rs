@@ -1,21 +1,19 @@
-use crate::data_structures::win_rate::WinRate;
-use crate::data_structures::DeckId;
+use crate::data_types::deck_id::DeckId;
+use crate::data_types::win_rate::WinRate;
 use serde::{Deserialize, Serialize};
-use std::cmp::PartialOrd;
 use std::collections::hash_map::Keys;
 use std::collections::HashMap;
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct IdWinRate(HashMap<DeckId, WinRate>);
+#[derive(Serialize, Deserialize, Debug)]
+pub struct DeckIdWinRateMap(HashMap<DeckId, WinRate>);
 
-impl FromIterator<(DeckId, WinRate)> for IdWinRate {
+impl FromIterator<(DeckId, WinRate)> for DeckIdWinRateMap {
     fn from_iter<T: IntoIterator<Item=(DeckId, WinRate)>>(iter: T) -> Self {
-        IdWinRate(HashMap::from_iter(iter))
+        DeckIdWinRateMap(HashMap::from_iter(iter))
     }
 }
 
-
-impl IdWinRate {
+impl DeckIdWinRateMap {
     pub(crate) fn len(&self) -> usize {
         self.0.len()
     }
@@ -51,7 +49,7 @@ impl IdWinRate {
     }
 
     pub(crate) fn new() -> Self {
-        IdWinRate(HashMap::<DeckId, WinRate>::new())
+        DeckIdWinRateMap(HashMap::<DeckId, WinRate>::new())
     }
 
     pub(crate) fn insert(&mut self, k: DeckId, v: WinRate) -> Option<WinRate> {

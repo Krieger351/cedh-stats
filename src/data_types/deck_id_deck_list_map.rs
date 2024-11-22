@@ -1,16 +1,15 @@
-use crate::data_structures::DeckId;
-use crate::data_structures::DeckList;
+use crate::data_types::deck_id::DeckId;
+use crate::data_types::deck_list::DeckList;
 use serde::{Deserialize, Serialize};
 use std::collections::hash_map::{Iter, Keys};
 use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
-#[repr(transparent)]
-pub struct IdDeckListMap(HashMap<DeckId, DeckList>);
+pub struct DeckIdDeckListMap(HashMap<DeckId, DeckList>);
 
-impl IdDeckListMap {
-    pub fn new() -> IdDeckListMap {
-        IdDeckListMap(HashMap::<DeckId, DeckList>::new())
+impl DeckIdDeckListMap {
+    pub fn new() -> DeckIdDeckListMap {
+        DeckIdDeckListMap(HashMap::<DeckId, DeckList>::new())
     }
 
     pub fn insert(&mut self, k: DeckId, v: DeckList) -> Option<DeckList> {
