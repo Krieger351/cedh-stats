@@ -37,7 +37,7 @@ impl CommanderEntry {
 
     pub fn into_deck_entry(self) -> Option<DeckEntry> {
         if self.is_valid() {
-            Some(DeckEntry::new(DeckId::from_str(&self.deck_list.unwrap()), WinRate::from_f64(self.win_rate.unwrap())))
+            Some(DeckEntry::new(self.get_id().unwrap(), WinRate::from_f64(self.win_rate.unwrap())))
         } else {
             None
         }

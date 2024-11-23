@@ -9,20 +9,20 @@ impl Cacheable<'_, DeckIdDeckListMap> for FullDeckIdDeckListMapReader<'_> {
     type C<'c> = CommanderCache<'c>;
 
     async fn compute(&self) -> Result<DeckIdDeckListMap> {
-        let id_win_rate = self.0.deck_id_win_rate_map().await?;
-        let mut id_deck_list_map = DeckIdDeckListMap::new();
+        let full_deck_entry_list = self.0.full_deck_entry_list().await?;
 
-        for id in id_win_rate.keys() {
-            match self.0.deck_list(id).await? {
-                Some(list) => { id_deck_list_map.insert(id.clone(), list); }
-                _ => ()
+        let mut map = DeckIdDeckListMap::new();
+
+        for entry in full_deck_entry_list.into_iter() {
+            if let Some(list) = self.0.deck_list(&entry.id).await? {
+                map.insert(entry.id, list);
             }
         }
-        Ok(id_deck_list_map)
+        Ok(map)
     }
 
     fn cache_file_path(&self) -> String {
-        "meta/deck_id_deck_list_map".to_string()
+        "meta/full-deck-id-deck-list-map".to_string()
     }
 }
 

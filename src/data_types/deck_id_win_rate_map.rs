@@ -2,6 +2,7 @@ use crate::data_types::deck_id::DeckId;
 use crate::data_types::win_rate::WinRate;
 use serde::{Deserialize, Serialize};
 use std::collections::hash_map::Keys;
+use std::collections::hash_map::{IntoIter, Values};
 use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -10,6 +11,15 @@ pub struct DeckIdWinRateMap(HashMap<DeckId, WinRate>);
 impl FromIterator<(DeckId, WinRate)> for DeckIdWinRateMap {
     fn from_iter<T: IntoIterator<Item=(DeckId, WinRate)>>(iter: T) -> Self {
         DeckIdWinRateMap(HashMap::from_iter(iter))
+    }
+}
+
+impl IntoIterator for DeckIdWinRateMap {
+    type Item = (DeckId, WinRate);
+    type IntoIter = IntoIter<DeckId, WinRate>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
     }
 }
 
@@ -55,8 +65,9 @@ impl DeckIdWinRateMap {
     pub(crate) fn insert(&mut self, k: DeckId, v: WinRate) -> Option<WinRate> {
         self.0.insert(k, v)
     }
-
-
+    pub(crate) fn values(&self) -> Values<'_, DeckId, WinRate> {
+        self.0.values()
+    }
     pub(crate) fn keys(&self) -> Keys<'_, DeckId, WinRate> {
         self.0.keys()
     }

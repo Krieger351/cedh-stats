@@ -30,7 +30,7 @@ impl Cacheable<'_, DeckIdWinRateMap> for TopDeckReader<'_> {
     type C<'c> = CommanderCache<'c>;
 
     async fn compute(&self) -> Result<DeckIdWinRateMap> {
-        let ids = self.0.deck_id_win_rate_map().await?;
+        let ids = self.0.full_deck_id_win_rate_map().await?;
 
         Ok(match self.1 {
             TopDeckMethod::Quartile => ids.into_top_decks_by_quartile(),

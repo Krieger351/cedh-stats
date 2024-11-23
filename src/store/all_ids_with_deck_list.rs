@@ -3,9 +3,9 @@ use crate::data_types::deck_id_set::DeckIdSet;
 use crate::store::Store;
 use anyhow::Result;
 
-struct IdsWithDeckListReader<'a>(&'a Store<'a>);
+struct AllIdsWithDeckListReader<'a>(&'a Store<'a>);
 
-impl Cacheable<'_, DeckIdSet> for IdsWithDeckListReader<'_> {
+impl Cacheable<'_, DeckIdSet> for AllIdsWithDeckListReader<'_> {
     type C<'c> = CommanderCache<'c>;
 
     async fn compute(&self) -> Result<DeckIdSet> {
@@ -14,12 +14,12 @@ impl Cacheable<'_, DeckIdSet> for IdsWithDeckListReader<'_> {
     }
 
     fn cache_file_path(&self) -> String {
-        "meta/ids_with_deck_list".to_string()
+        "meta/all_ids_with_deck_list".to_string()
     }
 }
 
 impl Store<'_> {
-    pub async fn ids_with_deck_list(self: &Self) -> Result<DeckIdSet> {
-        IdsWithDeckListReader(self).load_or_compute(&self.commander_cache).await
+    pub async fn all_ids_with_deck_list(self: &Self) -> Result<DeckIdSet> {
+        AllIdsWithDeckListReader(self).load_or_compute(&self.commander_cache).await
     }
 }
