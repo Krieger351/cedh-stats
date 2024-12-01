@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
-use std::fmt::{Display, Formatter};
+use std::fmt::{Debug, Display, Formatter, Pointer};
 use std::iter::Sum;
 use std::ops::{Add, Div, Mul, Sub};
 
@@ -28,7 +28,7 @@ impl WinRate {
 
 impl Display for WinRate {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.0)
+        std::fmt::Display::fmt(&self.0, f)
     }
 }
 

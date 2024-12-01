@@ -1,3 +1,4 @@
+use crate::command::all_cards::AllCards;
 use crate::command::cards_in_top_decks::CardsInTopDecks;
 use crate::command::prefetch::Prefetch;
 use crate::command::win_rate_per_card::WinRatePerCard;
@@ -10,6 +11,7 @@ mod prefetch;
 mod work;
 mod win_rate_per_card;
 mod cards_in_top_decks;
+mod all_cards;
 
 pub trait Executor {
     async fn exec(&self, store: &Store<'_>) -> anyhow::Result<()>;
@@ -21,6 +23,7 @@ pub enum Command {
     Work,
     WinRatePerCard,
     CardsInTopDecks { method: Option<TopDeckMethod> },
+    AllCards,
 }
 impl Command {
     pub async fn exec(self, store: &Store<'_>) -> anyhow::Result<()> {
@@ -29,6 +32,7 @@ impl Command {
             Command::Work => run_command(store, Work {}).await,
             Command::WinRatePerCard => run_command(store, WinRatePerCard {}).await,
             Command::CardsInTopDecks { method } => run_command(store, CardsInTopDecks::new(method)).await,
+            Command::AllCards => run_command(store, AllCards {}).await,
         }
     }
 }

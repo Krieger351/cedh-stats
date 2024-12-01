@@ -17,7 +17,7 @@ impl SimilarityMatrix {
         SimilarityMatrix(vec![vec![SimilarityScore::ZERO; len]; len])
     }
 
-    pub fn compute_similarity_matrix(lists: &[DeckList]) -> SimilarityMatrix {
+    pub fn compute_similarity_matrix(lists: &[&DeckList]) -> SimilarityMatrix {
         let n = lists.len();
         let mut matrix = SimilarityMatrix::new(n);
         for i in 0..n {

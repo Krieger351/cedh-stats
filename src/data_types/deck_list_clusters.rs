@@ -2,7 +2,7 @@ use crate::data_types::deck_id::DeckId;
 use crate::data_types::deck_id_set::DeckIdSet;
 use crate::data_types::similarity_matrix::SimilarityMatrix;
 use crate::data_types::similarity_score::SimilarityScore;
-use std::collections::hash_map::Entry;
+use std::collections::hash_map::{Entry, Iter};
 use std::collections::HashMap;
 
 #[derive(Debug)]
@@ -13,6 +13,14 @@ impl DeckListClusters {
         DeckListClusters(HashMap::new())
     }
 
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
+
+    pub(crate) fn iter(&self) -> Iter<'_, DeckId, DeckIdSet> {
+        self.0.iter()
+    }
+
     fn entry<'a>(&mut self, key: DeckId) -> Entry<'_, DeckId, DeckIdSet> {
         self.0.entry(key)
     }
@@ -21,7 +29,7 @@ impl DeckListClusters {
         self.0.insert(id, set)
     }
 
-    fn generate_overlapping_clusters<'a>(deck_id_list: &'a Vec<&'a DeckId>, similarity_matrix: &'a SimilarityMatrix, threshold: &'a SimilarityScore) -> DeckListClusters {
+    pub(crate) fn generate_overlapping_clusters<'a>(deck_id_list: &[&DeckId], similarity_matrix: &'a SimilarityMatrix, threshold: &'a SimilarityScore) -> DeckListClusters {
         let mut clusters = DeckListClusters::new();
 
         let n = deck_id_list.len();

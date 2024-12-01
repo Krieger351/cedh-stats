@@ -9,6 +9,7 @@ mod top_decks;
 mod all_commander_entries;
 mod full_deck_id_deck_list_map;
 mod all_deck_entries;
+mod write_file;
 
 use crate::cache::{Cache, CommanderCache};
 use crate::data_types::commander::Commander;

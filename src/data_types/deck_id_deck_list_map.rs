@@ -1,4 +1,5 @@
 use crate::data_types::deck_id::DeckId;
+use crate::data_types::deck_id_set::DeckIdSet;
 use crate::data_types::deck_list::DeckList;
 use serde::{Deserialize, Serialize};
 use std::collections::hash_map::{IntoIter, Iter, Keys, Values};
@@ -8,6 +9,9 @@ use std::collections::HashMap;
 pub struct DeckIdDeckListMap(HashMap<DeckId, DeckList>);
 
 impl DeckIdDeckListMap {
+    pub(crate) fn len(&self) -> usize {
+        self.0.len()
+    }
     pub fn new() -> DeckIdDeckListMap {
         DeckIdDeckListMap(HashMap::<DeckId, DeckList>::new())
     }
@@ -29,6 +33,18 @@ impl DeckIdDeckListMap {
 
     pub fn get(&self, id: &DeckId) -> Option<&DeckList> {
         self.0.get(id)
+    }
+
+    pub fn retain_by_key(&mut self, ids: &DeckIdSet) {
+        self.0.retain(|x, x1| ids.contains(x))
+    }
+
+    pub fn into_all_cards(self) -> DeckList {
+        let mut list = DeckList::new();
+        for value in self.values() {
+            list.extend(value.clone());
+        }
+        list
     }
 }
 impl IntoIterator for DeckIdDeckListMap {

@@ -44,7 +44,7 @@ pub trait Cacheable<'a, T: for<'b> Deserialize<'b> + Serialize>: Sized {
         }
 
         let value = self.compute().await?;
-        let _ = cache.write(&self.cache_file_path(), &value).await;
+        cache.write(&self.cache_file_path(), &value).await?;
 
         Ok(value)
     }

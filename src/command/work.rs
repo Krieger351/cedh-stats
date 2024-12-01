@@ -9,29 +9,38 @@ pub struct Work {}
 
 impl Executor for Work {
     async fn exec(&self, store: &Store<'_>) -> anyhow::Result<()> {
-        let full_deck_id_deck_list_map = store.full_deck_id_deck_list_map().await?;
+        let mut full_deck_id_deck_list_map = store.full_deck_id_deck_list_map().await?;
 
         let full_id_win_rate_map = store.full_deck_id_win_rate_map().await?;
 
-        let top_ids = full_id_win_rate_map.into_top_decks_by_percent();
+        let top_ids = full_id_win_rate_map.clone().into_top_decks_by_positive(); //.into_top_decks_by_quartile();
 
-        let deck_lists = full_deck_id_deck_list_map.into_iter().filter(|x| top_ids.get(&x.0).is_some()).collect::<DeckIdDeckListMap>();
-        // println!("{:#?}", deck_lists);
-        let top_ids = top_ids.keys().collect::<Vec<_>>(); //.keys().take(10).collect::<Vec<_>>().iter();
-        // let mut deck_lists = Vec::new();
-        // for &id in &top_ids {
-        //     if let Some(deck_list) = store.deck_list(id).await? {
-        //         deck_lists.push(deck_list)
-        //     }
-        // }
-        // let start = SystemTime::now();
-        let matrix = SimilarityMatrix::compute_similarity_matrix(&deck_lists.values().cloned().collect::<Vec<_>>()[..]);
-        // let end = SystemTime::now();
-        //
-        // println!("{}", matrix);
-        // println!("{:?}", end.duration_since(start));
-        // println!("{:?}", matrix);
-        println!("{:#?}", DeckListClusters::generate_clusters(&top_ids[..], &matrix, &SimilarityScore::from_f64(0.5)));
+        println!("Win rate for top ids: {:.2}", top_ids.average_win_rate());
+
+        let deck_lists = full_deck_id_deck_list_map.clone().into_iter().filter(|x| top_ids.get(&x.0).is_some()).collect::<DeckIdDeckListMap>();
+        let top_ids = &deck_lists.keys().collect::<Vec<_>>()[..];
+        let matrix_input = &deck_lists.values().collect::<Vec<_>>()[..];
+        assert_eq!(top_ids.len(), matrix_input.len());
+        let matrix = SimilarityMatrix::compute_similarity_matrix(matrix_input);
+
+        let clusters = DeckListClusters::generate_overlapping_clusters(top_ids, &matrix, &SimilarityScore::from_f64(0.7));
+
+        println!("There are {} clusters", clusters.len());
+        for (deck_id, deck_id_set) in clusters.iter() {
+            if (deck_id_set.len() > 20) {
+                let mut some_ids = full_id_win_rate_map.clone();
+                some_ids.retain_by_deck_id_set(deck_id_set);
+                println!("{}({}): {:.2}", deck_id, some_ids.len(), some_ids.average_win_rate());
+
+                // let mut cluster = full_deck_id_deck_list_map.clone();
+                // cluster.retain_by_key(deck_id_set);
+                // cluster.into_all_cards().iter().for_each(|x1|
+                //     println!("\t{}", x1)
+                // );
+
+                println!()
+            }
+        }
 
         Ok(())
     }
