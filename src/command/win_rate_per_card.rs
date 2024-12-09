@@ -1,6 +1,6 @@
 use crate::command::Executor;
-use crate::data_types::win_rate::WinRate;
 use crate::store::{Store, TopDeckMethod};
+use crate::types::win_rate::WinRate;
 
 pub struct WinRatePerCard {}
 

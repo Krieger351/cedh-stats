@@ -8,7 +8,7 @@ use std::vec::IntoIter;
 pub struct DeckEntryList(Vec<DeckEntry>);
 
 impl DeckEntryList {
-    pub(crate) fn iter(&self) -> Iter<'_, DeckEntry> {
+    pub fn iter(&self) -> Iter<'_, DeckEntry> {
         self.0.iter()
     }
 }

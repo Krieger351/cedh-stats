@@ -5,8 +5,8 @@ use anyhow::Result;
 
 struct FullDeckIdDeckListMapReader<'a>(&'a Store<'a>);
 
-impl Cacheable<'_, DeckIdDeckListMap> for FullDeckIdDeckListMapReader<'_> {
-    type C<'c> = CommanderCache<'c>;
+impl<'a> Cacheable<'a, DeckIdDeckListMap> for FullDeckIdDeckListMapReader<'_> {
+    type C = CommanderCache<'a>;
 
     async fn compute(&self) -> Result<DeckIdDeckListMap> {
         let full_deck_entry_list = self.0.full_deck_entry_list().await?;
@@ -28,6 +28,6 @@ impl Cacheable<'_, DeckIdDeckListMap> for FullDeckIdDeckListMapReader<'_> {
 
 impl Store<'_> {
     pub async fn full_deck_id_deck_list_map(self: &Self) -> Result<DeckIdDeckListMap> {
-        FullDeckIdDeckListMapReader(self).load_or_compute(&self.commander_cache).await
+        FullDeckIdDeckListMapReader(self).load_or_compute(&self.cache).await
     }
 }

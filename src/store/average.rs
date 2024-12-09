@@ -1,12 +1,12 @@
-use crate::data_types::win_rate::WinRate;
 use crate::store::Store;
+use crate::types::win_rate::WinRate;
 use anyhow::Result;
 
 impl Store<'_> {
     pub async fn average(self: &Self) -> Result<WinRate> {
         let valid_ids = self.all_ids_with_deck_list().await?;
         let id_win_rate = self.full_deck_id_win_rate_map().await?;
-        let mut acc = WinRate::from_f64(0.0);
+        let mut acc = WinRate::MIN;
         for id in valid_ids.iter() {
             acc = &acc + id_win_rate.get(id).unwrap();
         }

@@ -1,6 +1,6 @@
-use crate::data_types::deck_id::DeckId;
 use crate::data_types::deck_id_set::DeckIdSet;
-use crate::data_types::win_rate::WinRate;
+use crate::types::deck_id::DeckId;
+use crate::types::win_rate::WinRate;
 use serde::{Deserialize, Serialize};
 use std::collections::hash_map::Keys;
 use std::collections::hash_map::{IntoIter, Values};
@@ -25,7 +25,7 @@ impl IntoIterator for DeckIdWinRateMap {
 }
 
 impl DeckIdWinRateMap {
-    pub(crate) fn len(&self) -> usize {
+    pub fn len(&self) -> usize {
         self.0.len()
     }
 
@@ -38,22 +38,22 @@ impl DeckIdWinRateMap {
         self.0.values().map(|x| (x - &mean).powi(2)).sum::<WinRate>() / self.0.values().len() as f64
     }
 
-    pub(crate) fn into_top_decks_by_positive(self) -> Self {
+    pub fn into_top_decks_by_positive(self) -> Self {
         self.0.into_iter().filter(|(_, val)| val > &0.0).collect::<Self>()
     }
 
-    pub(crate) fn into_top_decks_by_z_score(self) -> Self {
+    pub fn into_top_decks_by_z_score(self) -> Self {
         let mean = self.mean();
         let standard_dev = self.standard_dev();
         self.0.into_iter().filter(|(_, val)| ((val - &mean) / standard_dev).abs() <= 3.0).collect::<Self>()
     }
 
-    pub(crate) fn into_top_decks_by_percent(self) -> Self {
+    pub fn into_top_decks_by_percent(self) -> Self {
         self.0.into_iter().filter(|x| { x.1 > 0.25 }).collect::<Self>()
     }
 
 
-    pub(crate) fn into_top_decks_by_quartile(self) -> Self {
+    pub fn into_top_decks_by_quartile(self) -> Self {
         let mut sorted = self.0.values().clone().collect::<Vec<_>>();
         sorted.sort_by(|a, b| b.partial_cmp(a).unwrap());
         let len = sorted.len();
@@ -63,28 +63,28 @@ impl DeckIdWinRateMap {
         self.0.into_iter().filter(|(_, x)| x >= &top_quartile_val).collect::<Self>()
     }
 
-    pub(crate) fn new() -> Self {
+    pub fn new() -> Self {
         DeckIdWinRateMap(HashMap::<DeckId, WinRate>::new())
     }
 
-    pub(crate) fn insert(&mut self, k: DeckId, v: WinRate) -> Option<WinRate> {
+    pub fn insert(&mut self, k: DeckId, v: WinRate) -> Option<WinRate> {
         self.0.insert(k, v)
     }
-    pub(crate) fn values(&self) -> Values<'_, DeckId, WinRate> {
+    pub fn values(&self) -> Values<'_, DeckId, WinRate> {
         self.0.values()
     }
-    pub(crate) fn keys(&self) -> Keys<'_, DeckId, WinRate> {
+    pub fn keys(&self) -> Keys<'_, DeckId, WinRate> {
         self.0.keys()
     }
-    pub(crate) fn get(&self, p0: &DeckId) -> Option<&WinRate> {
+    pub fn get(&self, p0: &DeckId) -> Option<&WinRate> {
         self.0.get(p0)
     }
 
-    pub(crate) fn average_win_rate(&self) -> WinRate {
+    pub fn average_win_rate(&self) -> WinRate {
         self.0.values().sum::<WinRate>() / self.0.values().len()
     }
 
-    pub(crate) fn retain_by_deck_id_set(&mut self, ids: &DeckIdSet) {
+    pub fn retain_by_deck_id_set(&mut self, ids: &DeckIdSet) {
         self.0.retain(|x, x1| ids.contains(x))
     }
 }

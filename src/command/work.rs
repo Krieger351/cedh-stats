@@ -1,9 +1,10 @@
 use crate::command::Executor;
 use crate::data_types::deck_id_deck_list_map::DeckIdDeckListMap;
 use crate::data_types::deck_list_clusters::DeckListClusters;
-use crate::data_types::similarity_matrix::SimilarityMatrix;
-use crate::data_types::similarity_score::SimilarityScore;
 use crate::store::Store;
+use crate::types::card_set::CardSet;
+use crate::types::similarity_matrix::SimilarityMatrix;
+use crate::types::similarity_score::SimilarityScore;
 
 pub struct Work {}
 
@@ -19,15 +20,15 @@ impl Executor for Work {
 
         let deck_lists = full_deck_id_deck_list_map.clone().into_iter().filter(|x| top_ids.get(&x.0).is_some()).collect::<DeckIdDeckListMap>();
         let top_ids = &deck_lists.keys().collect::<Vec<_>>()[..];
-        let matrix_input = &deck_lists.values().collect::<Vec<_>>()[..];
+        let matrix_input = &deck_lists.values().cloned().map(|x1| x1.into_iter().collect::<CardSet>()).collect::<Vec<CardSet>>()[..];
         assert_eq!(top_ids.len(), matrix_input.len());
         let matrix = SimilarityMatrix::compute_similarity_matrix(matrix_input);
 
-        let clusters = DeckListClusters::generate_overlapping_clusters(top_ids, &matrix, &SimilarityScore::from_f64(0.7));
+        let clusters = DeckListClusters::generate_overlapping_clusters(top_ids, &matrix, &SimilarityScore::new(0.7).unwrap());
 
         println!("There are {} clusters", clusters.len());
         for (deck_id, deck_id_set) in clusters.iter() {
-            if (deck_id_set.len() > 20) {
+            if deck_id_set.len() > 20 {
                 let mut some_ids = full_id_win_rate_map.clone();
                 some_ids.retain_by_deck_id_set(deck_id_set);
                 println!("{}({}): {:.2}", deck_id, some_ids.len(), some_ids.average_win_rate());

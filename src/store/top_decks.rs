@@ -26,8 +26,8 @@ impl Display for TopDeckMethod {
 
 struct TopDeckReader<'a>(&'a Store<'a>, &'a TopDeckMethod);
 
-impl Cacheable<'_, DeckIdWinRateMap> for TopDeckReader<'_> {
-    type C<'c> = CommanderCache<'c>;
+impl<'a> Cacheable<'a, DeckIdWinRateMap> for TopDeckReader<'_> {
+    type C = CommanderCache<'a>;
 
     async fn compute(&self) -> Result<DeckIdWinRateMap> {
         let ids = self.0.full_deck_id_win_rate_map().await?;
@@ -46,6 +46,6 @@ impl Cacheable<'_, DeckIdWinRateMap> for TopDeckReader<'_> {
 
 impl Store<'_> {
     pub async fn top_decks(&self, method: &TopDeckMethod) -> Result<DeckIdWinRateMap> {
-        TopDeckReader(self, method).load_or_compute(&self.commander_cache).await
+        TopDeckReader(self, method).load_or_compute(&self.cache).await
     }
 }

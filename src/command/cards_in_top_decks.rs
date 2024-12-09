@@ -1,6 +1,6 @@
 use crate::command::Executor;
-use crate::data_types::deck_list::DeckList;
 use crate::store::{Store, TopDeckMethod};
+use crate::types::card_set::CardSet;
 use anyhow::Result;
 
 pub struct CardsInTopDecks {
@@ -16,7 +16,7 @@ impl Executor for CardsInTopDecks {
         let top_decks = store.top_decks(&self.method).await?;
         let id_deck_list_map = store.full_deck_id_deck_list_map().await?;
 
-        let mut all_cards = DeckList::new();
+        let mut all_cards = CardSet::new();
 
         for deck_id in top_decks.keys() {
             if let Some(deck_list) = id_deck_list_map.get(deck_id) {

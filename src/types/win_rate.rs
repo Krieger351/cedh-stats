@@ -1,11 +1,12 @@
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
-use std::fmt::{Debug, Display, Formatter, Pointer};
+use std::fmt::{Debug, Display, Formatter};
 use std::iter::Sum;
 use std::ops::{Add, Div, Mul, Sub};
 
 #[derive(Serialize, Deserialize, Debug, Clone, Copy)]
 pub struct WinRate(f64);
+
 
 impl<'a> Sum<&'a WinRate> for WinRate {
     fn sum<I: Iterator<Item=&'a WinRate>>(iter: I) -> Self {
@@ -14,9 +15,29 @@ impl<'a> Sum<&'a WinRate> for WinRate {
     }
 }
 
+impl Sum<WinRate> for WinRate {
+    fn sum<I: Iterator<Item=WinRate>>(iter: I) -> Self {
+        let total = iter.map(|win_rate| win_rate.0).sum();
+        WinRate(total)
+    }
+}
+
+impl From<f64> for WinRate {
+    fn from(value: f64) -> Self {
+        WinRate(value)
+    }
+}
+
 impl WinRate {
-    pub fn from_f64(f: f64) -> WinRate {
-        WinRate(f)
+    pub const MIN: WinRate = WinRate(0.0);
+    pub const MAX: WinRate = WinRate(1.0);
+
+    pub fn new(f: f64) -> Option<Self> {
+        if Self::MIN <= f && Self::MAX >= f {
+            Some(WinRate(f))
+        } else {
+            None
+        }
     }
     pub fn powi(&self, power: i32) -> WinRate {
         WinRate(self.0.powi(power))
@@ -29,12 +50,6 @@ impl WinRate {
 impl Display for WinRate {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         std::fmt::Display::fmt(&self.0, f)
-    }
-}
-
-impl Sum for WinRate {
-    fn sum<I: Iterator<Item=Self>>(_iter: I) -> Self {
-        todo!()
     }
 }
 
@@ -52,13 +67,13 @@ impl PartialOrd<f64> for WinRate {
 
 impl PartialEq for WinRate {
     fn eq(&self, other: &Self) -> bool {
-        self.0.eq(&other.0)
+        self.eq(&other.0)
     }
 }
 
 impl PartialOrd for WinRate {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.0.partial_cmp(&other.0)
+        self.partial_cmp(&other.0)
     }
 }
 impl Sub for &WinRate {
@@ -81,7 +96,7 @@ impl Div<usize> for WinRate {
     type Output = WinRate;
 
     fn div(self, rhs: usize) -> Self::Output {
-        WinRate(self.0 / rhs as f64)
+        self / rhs as f64
     }
 }
 
@@ -97,7 +112,7 @@ impl Div for WinRate {
     type Output = WinRate;
 
     fn div(self, rhs: Self) -> Self::Output {
-        WinRate(self.0 / rhs.0)
+        self / rhs.0
     }
 }
 

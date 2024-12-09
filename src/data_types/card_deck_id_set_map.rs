@@ -1,5 +1,5 @@
-use crate::data_types::card::Card;
 use crate::data_types::deck_id_set::DeckIdSet;
+use crate::types::card::Card;
 use serde::{Deserialize, Serialize};
 use std::collections::hash_map::Iter;
 use std::collections::HashMap;

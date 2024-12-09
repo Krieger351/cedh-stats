@@ -1,5 +1,5 @@
-use crate::data_types::deck_id::DeckId;
-use crate::data_types::win_rate::WinRate;
+use crate::types::deck_id::DeckId;
+use crate::types::win_rate::WinRate;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]

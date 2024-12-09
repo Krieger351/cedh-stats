@@ -1,8 +1,11 @@
-use crate::cache::{Cacheable, CommanderCache};
-use crate::data_types::deck_id::DeckId;
-use crate::data_types::deck_list::DeckList;
-use crate::moxfield::Moxfield;
-use crate::store::Store;
+use crate::cache::CommanderCache;
+use crate::types::card_list::CardList;
+use crate::{
+    cache::Cacheable,
+    moxfield::Moxfield,
+    store::Store,
+    types::deck_id::DeckId,
+};
 use anyhow::Result;
 
 pub struct DeckListReader<'a>(&'a DeckId);
@@ -12,9 +15,10 @@ impl DeckListReader<'_> {
     }
 }
 
-impl Cacheable<'_, Option<DeckList>> for DeckListReader<'_> {
-    type C<'a> = CommanderCache<'a>;
-    async fn compute(&self) -> Result<Option<DeckList>> {
+impl<'a> Cacheable<'a, Option<CardList>> for DeckListReader<'_> {
+    type C = CommanderCache<'a>;
+
+    async fn compute(&self) -> Result<Option<CardList>> {
         Ok(Moxfield::get_list(self.0).await.unwrap_or(None))
     }
 
@@ -24,7 +28,7 @@ impl Cacheable<'_, Option<DeckList>> for DeckListReader<'_> {
 }
 
 impl Store<'_> {
-    pub async fn deck_list(self: &Self, id: &DeckId) -> Result<Option<DeckList>> {
-        DeckListReader(id).load_or_compute(&&self.commander_cache).await
+    pub async fn deck_list(self: &Self, id: &DeckId) -> Result<Option<CardList>> {
+        DeckListReader(id).load_or_compute(&self.cache).await
     }
 }

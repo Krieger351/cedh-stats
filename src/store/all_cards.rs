@@ -1,15 +1,16 @@
 use crate::cache::{Cacheable, CommanderCache};
-use crate::data_types::deck_list::DeckList;
 use crate::store::Store;
+use crate::types::card_set::CardSet;
 use anyhow::Result;
 
 struct AllCardsReader<'a>(&'a Store<'a>);
 
-impl Cacheable<'_, DeckList> for AllCardsReader<'_> {
-    type C<'a> = CommanderCache<'a>;
-    async fn compute(&self) -> Result<DeckList> {
+impl<'a> Cacheable<'a, CardSet> for AllCardsReader<'_> {
+    type C = CommanderCache<'a>;
+
+    async fn compute(&self) -> Result<CardSet> {
         let entries = self.0.all_commander_entries().await?;
-        let mut all_cards = DeckList::new();
+        let mut all_cards = CardSet::new();
         for entry in entries.iter() {
             if let Some(id) = entry.get_id() {
                 if let Some(list) = self.0.deck_list(&id).await? {
@@ -26,7 +27,7 @@ impl Cacheable<'_, DeckList> for AllCardsReader<'_> {
 }
 
 impl Store<'_> {
-    pub async fn all_cards(&self) -> Result<DeckList> {
-        AllCardsReader(self).load_or_compute(&&self.commander_cache).await
+    pub async fn all_cards(&self) -> Result<CardSet> {
+        AllCardsReader(self).load_or_compute(&self.cache).await
     }
 }
