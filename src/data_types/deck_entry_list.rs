@@ -1,5 +1,5 @@
-use crate::data_types::deck_entry::DeckEntry;
 use crate::data_types::deck_id_win_rate_map::DeckIdWinRateMap;
+use crate::types::deck_entry::DeckEntry;
 use serde::{Deserialize, Serialize};
 use std::slice::Iter;
 use std::vec::IntoIter;
@@ -15,7 +15,7 @@ impl DeckEntryList {
 
 impl DeckEntryList {
     pub fn into_deck_id_win_rate_map(self) -> DeckIdWinRateMap {
-        self.0.into_iter().map(|x| x.into_tuple()).collect::<DeckIdWinRateMap>()
+        self.0.into_iter().map(|x| x.into()).collect::<DeckIdWinRateMap>()
     }
 }
 

@@ -3,7 +3,7 @@ use std::convert::Infallible;
 use std::fmt::{Debug, Display, Formatter};
 use std::str::FromStr;
 
-#[derive(Serialize, Deserialize, Debug, Clone, Hash, PartialOrd, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Debug, Clone, Hash, PartialOrd, PartialEq, Eq, Ord)]
 pub struct Card(String);
 
 impl Display for Card {

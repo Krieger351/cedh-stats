@@ -32,7 +32,7 @@ impl WinRate {
     pub const MIN: WinRate = WinRate(0.0);
     pub const MAX: WinRate = WinRate(1.0);
 
-    pub fn new(f: f64) -> Option<Self> {
+    pub fn from(f: f64) -> Option<Self> {
         if Self::MIN <= f && Self::MAX >= f {
             Some(WinRate(f))
         } else {

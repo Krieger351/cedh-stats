@@ -1,5 +1,5 @@
-use crate::data_types::deck_id_set::DeckIdSet;
 use crate::types::deck_id::DeckId;
+use crate::types::deck_id_set::DeckIdSet;
 use crate::types::similarity_matrix::SimilarityMatrix;
 use crate::types::similarity_score::SimilarityScore;
 use std::collections::hash_map::{Entry, Iter};

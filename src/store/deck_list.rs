@@ -1,34 +1,32 @@
-use crate::cache::CommanderCache;
+use crate::cache::{Cacheable, CommanderCache};
 use crate::types::card_list::CardList;
 use crate::{
-    cache::Cacheable,
-    moxfield::Moxfield,
     store::Store,
     types::deck_id::DeckId,
 };
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 
-pub struct DeckListReader<'a>(&'a DeckId);
+pub struct DeckListReader<'a>(&'a Store<'a>, &'a DeckId);
 impl DeckListReader<'_> {
-    pub fn new(id: &DeckId) -> DeckListReader {
-        DeckListReader(id)
+    pub fn new<'a>(store: &'a Store, deck_id: &'a DeckId) -> DeckListReader<'a> {
+        DeckListReader(store, deck_id)
     }
 }
 
-impl<'a> Cacheable<'a, Option<CardList>> for DeckListReader<'_> {
+
+impl<'a> Cacheable<'a, CardList> for DeckListReader<'a> {
     type C = CommanderCache<'a>;
 
-    async fn compute(&self) -> Result<Option<CardList>> {
-        Ok(Moxfield::get_list(self.0).await.unwrap_or(None))
+    async fn compute(&self) -> Result<CardList> {
+        Ok(self.0.all_decks().await?.iter().find(|x| x.id() == self.1).ok_or(anyhow!("Deck Id Missing"))?.list().clone())
     }
 
     fn cache_file_path(&self) -> String {
-        format!("deck_list/{}", self.0)
+        format!("deck-list/{}", self.1)
     }
 }
-
 impl Store<'_> {
-    pub async fn deck_list(self: &Self, id: &DeckId) -> Result<Option<CardList>> {
-        DeckListReader(id).load_or_compute(&self.cache).await
+    pub async fn deck_list(self: &Self, id: &DeckId) -> Result<CardList> {
+        DeckListReader(self, id).load_or_compute(&self.cache).await
     }
 }

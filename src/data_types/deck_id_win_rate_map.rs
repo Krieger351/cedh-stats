@@ -1,5 +1,5 @@
-use crate::data_types::deck_id_set::DeckIdSet;
 use crate::types::deck_id::DeckId;
+use crate::types::deck_id_set::DeckIdSet;
 use crate::types::win_rate::WinRate;
 use serde::{Deserialize, Serialize};
 use std::collections::hash_map::Keys;

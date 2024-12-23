@@ -12,18 +12,17 @@ pub trait FileController {
     }
     fn key(&self, key: &str) -> String;
     async fn read<T: for<'b> Deserialize<'b>>(&self, key: &str) -> anyhow::Result<T> {
-        let safe_key = (&self.key(&Self::file_safe_string(key)));
-        println!("{safe_key}");
+        let safe_key = &self.key(key);
         let file_string = tokio::fs::read_to_string(safe_key).await?.to_string();
         let data = serde_json::from_str::<T>(&file_string)?;
         Ok(data)
     }
 
     async fn write<T: Serialize>(&self, key: &str, data: T) -> anyhow::Result<()> {
-        let safe_key = Self::file_safe_string(&self.key(key));
+        let safe_key = &self.key(key);
         let data_string = serde_json::to_string_pretty::<T>(&data)?;
         tokio::fs::create_dir_all(Path::new(&safe_key).parent().unwrap()).await?;
-        tokio::fs::write(key, data_string).await?;
+        tokio::fs::write(safe_key, data_string).await?;
         Ok(())
     }
 }
@@ -55,7 +54,7 @@ impl<'a> CommanderCache<'a> {
 
 impl FileController for CommanderCache<'_> {
     fn key(&self, key: &str) -> String {
-        format!(".cache/{}{}.json", Self::file_safe_string(&self.commander.to_string()), key)
+        format!(".cache/{}/{}.json", Self::file_safe_string(&self.commander.to_string()), key)
     }
 }
 

@@ -1,5 +1,5 @@
 use crate::cache::{Cache, Cacheable, CommanderCache};
-use crate::data;
+use crate::remote_data;
 use crate::store::Store;
 use crate::types::commander::Commander;
 use anyhow::Result;
@@ -23,7 +23,7 @@ impl<'a> Cacheable<'a, HashSet<Commander>> for TopCommandersReader {
     type C = CommanderCache<'a>;
 
     async fn compute(&self) -> Result<HashSet<Commander>> {
-        data::edh_top_sixteen::EdhTopSixteen::get_commanders().await
+        remote_data::edh_top_sixteen::get_commanders().await
     }
 
     fn cache_file_path(&self) -> String {

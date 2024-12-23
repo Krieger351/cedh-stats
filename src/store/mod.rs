@@ -6,15 +6,13 @@ mod all_ids_with_deck_list;
 mod all_cards;
 mod card_list_map;
 mod top_decks;
-pub mod all_commander_entries;
 mod full_deck_id_deck_list_map;
 mod all_deck_entries;
 mod write_file;
-mod commander_data;
+mod all_decks;
 
 use crate::cache::CommanderCache;
 use crate::types::commander::Commander;
-pub use top_decks::TopDeckMethod;
 
 pub struct Store<'a> {
     commander: &'a Commander,
@@ -22,6 +20,9 @@ pub struct Store<'a> {
 }
 
 impl Store<'_> {
+    pub fn cache(&self) -> &CommanderCache<'_> {
+        &self.cache
+    }
     pub fn new(commander: &Commander) -> Store {
         Store {
             commander,

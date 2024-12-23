@@ -9,20 +9,14 @@ impl<'a> Cacheable<'a, CardSet> for AllCardsReader<'_> {
     type C = CommanderCache<'a>;
 
     async fn compute(&self) -> Result<CardSet> {
-        let entries = self.0.all_commander_entries().await?;
+        let decks = self.0.all_decks().await?;
         let mut all_cards = CardSet::new();
-        for entry in entries.iter() {
-            if let Some(id) = entry.get_id() {
-                if let Some(list) = self.0.deck_list(&id).await? {
-                    all_cards.extend(list);
-                }
-            }
-        }
+        decks.into_iter().for_each(|b| all_cards.extend(b.list().iter().cloned()));
         Ok(all_cards)
     }
 
     fn cache_file_path(&self) -> String {
-        "meta/all_cards".into()
+        "meta/all-cards".into()
     }
 }
 

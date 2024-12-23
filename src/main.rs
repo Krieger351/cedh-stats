@@ -1,11 +1,9 @@
 mod store;
 mod cache;
-mod moxfield;
 mod command;
-mod data_types;
+// mod data_types;
 mod types;
-mod data;
-mod loader;
+mod remote_data;
 
 use anyhow::Result;
 use clap::Parser;

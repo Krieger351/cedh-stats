@@ -1,33 +1,39 @@
 use crate::command::Executor;
-use crate::store::{Store, TopDeckMethod};
+use crate::store::Store;
 use crate::types::card_set::CardSet;
+use crate::types::deck_data_list::TopDeckMethod;
 use anyhow::Result;
 
 pub struct CardsInTopDecks {
-    method: TopDeckMethod,
+    method: Vec<TopDeckMethod>,
 }
 impl CardsInTopDecks {
-    pub fn new(method: Option<TopDeckMethod>) -> Self {
-        Self { method: method.unwrap_or_default() }
+    pub fn new(method: Option<Vec<TopDeckMethod>>) -> Self {
+        Self { method: method.unwrap_or(vec![TopDeckMethod::Percent]) }
     }
 }
+
 impl Executor for CardsInTopDecks {
     async fn exec(&self, store: &Store<'_>) -> Result<()> {
-        let top_decks = store.top_decks(&self.method).await?;
-        let id_deck_list_map = store.full_deck_id_deck_list_map().await?;
+        let entries = store.all_decks().await?.into_top_decks_with_methods(&self.method[..]);
 
-        let mut all_cards = CardSet::new();
+        let mut card_set = CardSet::new();
 
-        for deck_id in top_decks.keys() {
-            if let Some(deck_list) = id_deck_list_map.get(deck_id) {
-                all_cards.extend(deck_list.clone().into_iter());
-            }
+        for entry in entries.iter() {
+            card_set.extend(store.deck_list(entry.id()).await?);
         }
 
-        println!("The top decks for {} have {} unique cards", store.commander(), &all_cards.len());
-
-        for card in all_cards.iter() {
-            println!("\t{}", card);
+        println!("There are {} top decks with {} unique cards for the sequence: {}", entries.len(), card_set.len(), &self.method.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(", "));
+        println!();
+        println!();
+        let mut cards = card_set.iter().collect::<Vec<_>>();
+        cards.sort();
+        let max_width: usize = cards.iter().map(|s| s.to_string().len()).max().unwrap_or(0) + 2;
+        for (index, card) in cards.iter().enumerate() {
+            print!("{card:<width$}", width = max_width);
+            if index % 3 == 2 {
+                println!();
+            }
         }
 
         Ok(())
