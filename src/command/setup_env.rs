@@ -1,23 +1,32 @@
 use crate::command::Executor;
-use crate::store::Store;
-use crate::types::commander::Commander;
 use dialoguer::FuzzySelect;
+use store::Store;
+use types::commander::Commander;
 
-pub struct SetupEnv();
+pub struct SetupEnv(Option<Commander>);
+
+impl SetupEnv {
+    pub fn new(commander: Option<Commander>) -> Self {
+        Self(commander)
+    }
+}
 
 
 impl Executor for SetupEnv {
-    async fn exec(&self, store: &Store<'_>) -> anyhow::Result<()> {
-        let commanders = store.fetch_top_commanders().await?.into_iter().collect::<Vec<Commander>>();
+    async fn exec(self, store: &Store<'_>) -> anyhow::Result<()> {
+        let commander = if self.0.is_some() { self.0.clone().unwrap() } else {
+            let commanders = store.fetch_top_commanders().await?.into_iter().collect::<Vec<Commander>>();
 
-        let selection = FuzzySelect::new()
-            .with_prompt("Which commander would you like to configure?")
-            .items(&commanders)
-            .interact()?;
+            let selection = FuzzySelect::new()
+                .with_prompt("Which commander would you like to configure?")
+                .items(&commanders)
+                .interact()?;
 
-        println!("You chose: {}", commanders[selection]);
+            commanders[selection].clone()
+        };
 
-        tokio::fs::write(".env", format!("COMMANDER=\"{}\"", commanders[selection])).await?;
+        println!("You chose: {commander}", );
+        tokio::fs::write(".env", format!("COMMANDER=\"{commander}\"")).await?;
 
 
         Ok(())

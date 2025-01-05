@@ -1,12 +1,10 @@
 use crate::command::Executor;
-// use crate::data_types::deck_id_deck_list_map::DeckIdDeckListMap;
-// use crate::data_types::deck_list_clusters::DeckListClusters;
-use crate::store::Store;
+use store::Store;
 
 pub struct Work {}
 
 impl Executor for Work {
-    async fn exec(&self, store: &Store<'_>) -> anyhow::Result<()> {
+    async fn exec(self, _store: &Store<'_>) -> anyhow::Result<()> {
         // let mut full_deck_id_deck_list_map = store.full_deck_id_deck_list_map().await?;
         //
         // let full_id_win_rate_map = store.full_deck_id_win_rate_map().await?;

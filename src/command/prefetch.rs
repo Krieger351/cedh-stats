@@ -1,13 +1,13 @@
 use crate::command::Executor;
-use crate::store::Store;
 use indicatif::{ProgressBar, ProgressStyle};
 use std::time::Duration;
+use store::Store;
 use tokio::time;
 
 pub struct Prefetch {}
 
 impl Executor for Prefetch {
-    async fn exec(&self, store: &Store<'_>) -> anyhow::Result<()> {
+    async fn exec(self, store: &Store<'_>) -> anyhow::Result<()> {
         let pb = ProgressBar::new_spinner();
         pb.set_style(ProgressStyle::with_template("{spinner:.blue} {msg} ({elapsed_precise})")?);
         pb.enable_steady_tick(Duration::new(0, 500));

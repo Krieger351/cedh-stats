@@ -2,14 +2,19 @@
 <module type="WEB_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/cli/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/types/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/cache/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/cli/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/command/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/store/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/top_sixteen/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/types/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/temp" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
-      <excludeFolder url="file://$MODULE_DIR$/types/target" />
+      <excludeFolder url="file://$MODULE_DIR$/crates/cli/target" />
+      <excludeFolder url="file://$MODULE_DIR$/crates/types/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

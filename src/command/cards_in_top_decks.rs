@@ -1,8 +1,8 @@
 use crate::command::Executor;
-use crate::store::Store;
-use crate::types::card_set::CardSet;
-use crate::types::deck_data_list::TopDeckMethod;
 use anyhow::Result;
+use store::Store;
+use types::card_set::CardSet;
+use types::deck_data_list::TopDeckMethod;
 
 pub struct CardsInTopDecks {
     method: Vec<TopDeckMethod>,
@@ -14,7 +14,7 @@ impl CardsInTopDecks {
 }
 
 impl Executor for CardsInTopDecks {
-    async fn exec(&self, store: &Store<'_>) -> Result<()> {
+    async fn exec(self, store: &Store<'_>) -> Result<()> {
         let entries = store.all_decks().await?.into_top_decks_with_methods(&self.method[..]);
 
         let mut card_set = CardSet::new();

@@ -1,7 +1,6 @@
 use crate::command::Executor;
-use crate::store::Store;
-use crate::types::deck_data_list::TopDeckMethod;
-use std::collections::{HashMap, HashSet};
+use store::Store;
+use types::deck_data_list::TopDeckMethod;
 
 pub struct WinRatePerCard {
     method: Vec<TopDeckMethod>,
@@ -12,19 +11,15 @@ impl WinRatePerCard {
     }
 }
 impl Executor for WinRatePerCard {
-    async fn exec(&self, store: &Store<'_>) -> anyhow::Result<()> {
+    async fn exec(self, store: &Store<'_>) -> anyhow::Result<()> {
         let entries = store.all_decks().await?.into_top_decks_with_methods(&self.method[..]);
-        let mut map = HashMap::new();
- 
-        for entry in entries.iter() {
-            let card_list = store.deck_list(entry.id()).await?.into_iter();
-            for card in card_list {
-                map.entry(card).or_insert(HashSet::new()).insert(entry.id());
-            }
-        }
+        println!("Average win rate: {:2}", store.all_decks().await?.average());
 
-        for (card, set) in map {
-            println!("{}: {}", card, set.len())
+        let mut averages = entries.win_rate_per_card().into_iter().collect::<Vec<_>>();
+        averages.sort();
+
+        for (card, average) in averages {
+            println!("{card:width$.20}  {average:.5}", width = 20);
         }
 
         Ok(())

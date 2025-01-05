@@ -1,0 +1,11 @@
+[package]
+name = "store"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+cache = { path = "../cache" }
+types = { path = "../types" }
+top_sixteen = { path = "../top_sixteen" }
+anyhow = "1.0.93"
+serde = { version = "1.0.217", features = ["derive"] }

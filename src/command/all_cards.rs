@@ -1,11 +1,11 @@
 use crate::command::Executor;
-use crate::store::Store;
+use store::Store;
 
 pub struct AllCards();
 
 
 impl Executor for AllCards {
-    async fn exec(&self, store: &Store<'_>) -> anyhow::Result<()> {
+    async fn exec(self, store: &Store<'_>) -> anyhow::Result<()> {
         let all_cards = store.all_cards().await?;
 
         println!("There are {} unique cards.", all_cards.len());

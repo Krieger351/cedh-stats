@@ -1,0 +1,11 @@
+[package]
+name = "types"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde = { version = "1.0.217", features = ["derive"] }
+num-traits = "0.2.19"
+ndarray = { version = "0.16.1", features = ["serde"] }
+clap = "4.5.23"
+anyhow = "1.0.95"
