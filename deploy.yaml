@@ -18,3 +18,10 @@ jobs:
         with:
           toolchain: stable
       - run: cargo build --release --all-features
+
+      
+#      - name: Release
+#        uses: softprops/action-gh-release@v1
+#        with:
+#          files: |
+#            ${{ env.ASSET }}
