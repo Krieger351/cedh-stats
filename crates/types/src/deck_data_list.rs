@@ -30,7 +30,6 @@ impl Display for TopDeckMethod {
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct DeckDataList(Vec<DeckData>);
 
-
 impl DeckDataList {
     pub fn new() -> Self {
         DeckDataList(Vec::new())
@@ -41,7 +40,7 @@ impl DeckDataList {
     pub fn len(&self) -> usize {
         self.0.len()
     }
-    
+
     pub fn get(&self, index: &DeckId) -> Option<&DeckData> {
         self.iter().find(|x| x.id() == index)
     }
@@ -130,14 +129,14 @@ impl DeckDataList {
         sum / count
     }
 
-    pub fn average_standing(&self) -> Standing {
+    pub fn average_standing(&self) -> usize {
         let mut sum = Standing::from(0);
 
         let count = self.len();
 
         self.iter().for_each(|x| sum += x.standing());
 
-        sum
+        sum / count
     }
 
     pub fn all_cards(&self) -> CardSet {

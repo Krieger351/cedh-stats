@@ -3,7 +3,6 @@ use crate::deck_id::DeckId;
 use crate::standing::Standing;
 use crate::win_rate::WinRate;
 use serde::{Deserialize, Serialize};
-use std::fmt::Display;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct DeckData {

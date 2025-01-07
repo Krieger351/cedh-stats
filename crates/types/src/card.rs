@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::convert::Infallible;
 use std::fmt::{Debug, Display, Formatter};
 use std::str::FromStr;
+use std::string::ToString;
 
 #[derive(Serialize, Deserialize, Debug, Clone, Hash, PartialOrd, PartialEq, Eq, Ord)]
 pub struct Card(String);

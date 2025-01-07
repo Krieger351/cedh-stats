@@ -1,10 +1,11 @@
 use crate::command::Executor;
-use anyhow::Context;
+use dialoguer::console::Style;
 use dialoguer::theme::ColorfulTheme;
 use std::cmp::Reverse;
 use std::collections::HashSet;
 use store::Store;
 use types::card::Card;
+use types::card_set::CardSet;
 use types::clusters::Clusters;
 use types::deck_data_list::{DeckDataList, TopDeckMethod};
 use types::deck_id::DeckId;
@@ -23,7 +24,7 @@ impl FindClusters {
     }
 }
 
-fn get_selection<'a>(store: &Store<'_>, clusters: &'a Clusters, deck_data_list: &DeckDataList) -> &'a DeckId {
+fn get_selection<'a>(clusters: &'a Clusters, deck_data_list: &DeckDataList) -> &'a DeckId {
     let mut items = vec![];
     for (id, cluster) in clusters.iter() {
         if cluster.len() > 1 {
@@ -81,35 +82,38 @@ impl Executor for FindClusters {
             });
         }
 
-        let selection = get_selection(store, &clusters, &store.all_decks().await?);
+        let selection = get_selection(&clusters, &store.all_decks().await?);
         let cluster = &clusters[selection];
         let cluster_decks = store.all_decks().await?.pick_decks(cluster);
 
         let win_rate_per_card = cluster_decks.win_rate_per_card();
-        let common_cards_set = cluster_decks.common_cards();
-
-        let mut common_cards = Vec::from_iter(common_cards_set.iter());
-        common_cards.sort();
+        let all_cards = cluster_decks.all_cards();
+        let common_cards = cluster_decks.common_cards();
+        let uncommon_cards = all_cards.difference(&common_cards).cloned().collect::<CardSet>();
+        let mut all_cards_vec = all_cards.iter().collect::<Vec<_>>();
+        all_cards_vec.sort();
+        
+        let style_common = Style::new().color256(33);
+        let style_uncommon = Style::new().color256(34);
 
         println!("Cluster Info");
         println!("average win rate: {:.4}", cluster_decks.average());
-        println!("{selection} has {} common cards", common_cards.len());
+        println!("average standing: {:.4}", cluster_decks.average_standing());
+        println!("There are {:.4} {} cards and {:.4} {} cards", common_cards.len(), style_common.apply_to("common"), uncommon_cards.len(), style_uncommon.apply_to("uncommon"));
         println!();
-        for card in common_cards.iter() {
-            println!(" {:.3}: {card}", win_rate_per_card.get(card).context("Card should exist")?);
+
+        for card in all_cards_vec {
+            let win_rate = win_rate_per_card.get(card).unwrap();
+            let color = if common_cards.contains(card) {
+                &style_common
+            } else if uncommon_cards.contains(card) {
+                &style_uncommon
+            } else {
+                unreachable!();
+            };
+
+            println!("{win_rate:.4}: {}", color.apply_to(card));
         }
-        println!();
-
-        let all_cards_set = cluster_decks.all_cards();
-        let mut all_cards = Vec::from_iter(all_cards_set.difference(&common_cards_set));
-        all_cards.sort();
-
-        println!("{selection} has {} uncommon cards", all_cards.len());
-        println!();
-        for card in all_cards.iter() {
-            println!("{:.3}: {card}", win_rate_per_card.get(card).context("Card should exist")?);
-        }
-
         Ok(())
     }
 }

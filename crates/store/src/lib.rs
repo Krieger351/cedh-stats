@@ -1,12 +1,8 @@
 mod top_commanders;
 mod average;
-mod full_deck_id_win_rate_map;
 pub mod deck_list;
-mod all_ids_with_deck_list;
 mod all_cards;
-mod card_list_map;
 mod top_decks;
-mod full_deck_id_deck_list_map;
 mod all_deck_entries;
 mod write_file;
 mod all_decks;
