@@ -46,7 +46,8 @@ jobs:
         run: |
           mkdir dist
           cp target/release/cedh-stats dist/
-          tar -czvf cedh-stats-Linux.tar.gz -C dist .
+          tar -czvf cedh-stats-${{ matrix.build }}.tar.gz -C dist .
+
 
       - name: Upload binary as artifact
         uses: actions/upload-artifact@v3
