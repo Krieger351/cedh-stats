@@ -1,10 +1,13 @@
 use crate::card::Card;
 use crate::card_set::CardSet;
 use crate::deck_data::DeckData;
+use crate::deck_id::DeckId;
 use crate::deck_id_set::DeckIdSet;
+use crate::standing::Standing;
 use crate::win_rate::WinRate;
 use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
+use std::cmp::PartialOrd;
 use std::collections::{HashMap, HashSet};
 use std::fmt::{Display, Formatter};
 use std::ops::{Index, RangeFull};
@@ -17,6 +20,7 @@ pub enum TopDeckMethod {
     Quartile,
     ZScore,
     Positive,
+    Standing,
 }
 impl Display for TopDeckMethod {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
@@ -25,6 +29,7 @@ impl Display for TopDeckMethod {
 }
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct DeckDataList(Vec<DeckData>);
+
 
 impl DeckDataList {
     pub fn new() -> Self {
@@ -35,6 +40,10 @@ impl DeckDataList {
     }
     pub fn len(&self) -> usize {
         self.0.len()
+    }
+    
+    pub fn get(&self, index: &DeckId) -> Option<&DeckData> {
+        self.iter().find(|x| x.id() == index)
     }
 
     fn mean(&self) -> WinRate {
@@ -70,6 +79,10 @@ impl DeckDataList {
         self.0.iter().filter(|x| x.win_rate() >= &top_quartile_val).cloned().collect::<Self>()
     }
 
+    pub fn into_top_decks_by_standing(self) -> Self {
+        self.0.into_iter().filter(|x| x.standing() <= &Standing::default()).collect::<Self>()
+    }
+
 
     pub fn into_top_decks(self, method: &TopDeckMethod) -> Self {
         match method {
@@ -77,6 +90,7 @@ impl DeckDataList {
             TopDeckMethod::Quartile => self.into_top_decks_by_quartile(),
             TopDeckMethod::ZScore => self.into_top_decks_by_z_score(),
             TopDeckMethod::Positive => self.into_top_decks_by_positive(),
+            TopDeckMethod::Standing => self.into_top_decks_by_standing()
         }
     }
 
@@ -107,13 +121,23 @@ impl DeckDataList {
     }
 
     pub fn average(&self) -> WinRate {
-        let mut sum = WinRate::from(0.).unwrap();
-        let count = self.iter().len();
+        let mut sum = WinRate::from(0.);
+        let count = self.len();
 
         for win_rate in self.iter() {
             sum += win_rate.win_rate();
         }
         sum / count
+    }
+
+    pub fn average_standing(&self) -> Standing {
+        let mut sum = Standing::from(0);
+
+        let count = self.len();
+
+        self.iter().for_each(|x| sum += x.standing());
+
+        sum
     }
 
     pub fn all_cards(&self) -> CardSet {

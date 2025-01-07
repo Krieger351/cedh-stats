@@ -9,7 +9,6 @@ pub mod deck_id_set;
 pub mod similarity_score;
 pub mod similarity_matrix;
 pub mod commander_data;
-pub mod deck_entry;
-pub mod deck_entry_list;
 pub mod deck_data_list;
 pub mod clusters;
+mod standing;

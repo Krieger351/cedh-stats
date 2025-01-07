@@ -9,7 +9,7 @@ pub struct CardsInTopDecks {
 }
 impl CardsInTopDecks {
     pub fn new(method: Option<Vec<TopDeckMethod>>) -> Self {
-        Self { method: method.unwrap_or(vec![TopDeckMethod::Percent]) }
+        Self { method: method.unwrap_or(vec![TopDeckMethod::Standing]) }
     }
 }
 

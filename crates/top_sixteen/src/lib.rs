@@ -32,11 +32,12 @@ struct EntryNode {
     main_deck: Vec<TopSixteenEdgeCard>,
     #[serde(alias = "decklist")]
     deck_list: String,
+    standing: usize,
 }
 
 impl EntryNode {
     fn into_deck_data(self) -> Option<DeckData> {
-        DeckData::new(DeckId::from_moxfield(self.deck_list), Some(self.main_deck.into_iter().map(|x| { x.name }).collect::<Vec<_>>()), self.win_rate)
+        DeckData::new(DeckId::from_moxfield(self.deck_list), Some(self.main_deck.into_iter().map(|x| { x.name }).collect::<Vec<_>>()), self.win_rate, Some(self.standing.into()))
     }
 }
 
@@ -111,6 +112,7 @@ async fn get_commanders_recursive(after: Option<String>) -> reqwest::Result<Resp
         .text().await?;
     Ok(from_str::<Response<CommanderData>>(&text).unwrap())
 }
+
 pub async fn get_commanders<'a>() -> anyhow::Result<HashSet<Commander>> {
     let mut has_next = true;
     let mut next = None;
@@ -141,6 +143,7 @@ async fn get_entries_recursive(commander: &Commander, after: Option<String>) -> 
             name
           }
           winRate
+          standing
         }
       }
       pageInfo {

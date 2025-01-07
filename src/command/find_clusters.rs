@@ -91,7 +91,9 @@ impl Executor for FindClusters {
         let mut common_cards = Vec::from_iter(common_cards_set.iter());
         common_cards.sort();
 
-        println!("Cluster for {selection} has {} common cards", common_cards.len());
+        println!("Cluster Info");
+        println!("average win rate: {:.4}", cluster_decks.average());
+        println!("{selection} has {} common cards", common_cards.len());
         println!();
         for card in common_cards.iter() {
             println!(" {:.3}: {card}", win_rate_per_card.get(card).context("Card should exist")?);
@@ -102,7 +104,7 @@ impl Executor for FindClusters {
         let mut all_cards = Vec::from_iter(all_cards_set.difference(&common_cards_set));
         all_cards.sort();
 
-        println!("Cluster for {selection} has {} uncommon cards", all_cards.len());
+        println!("{selection} has {} uncommon cards", all_cards.len());
         println!();
         for card in all_cards.iter() {
             println!("{:.3}: {card}", win_rate_per_card.get(card).context("Card should exist")?);

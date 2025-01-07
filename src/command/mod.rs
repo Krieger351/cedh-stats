@@ -1,5 +1,6 @@
 use crate::command::all_cards::AllCards;
 use crate::command::cards_in_top_decks::CardsInTopDecks;
+use crate::command::compare::Compare;
 use crate::command::find_clusters::FindClusters;
 use crate::command::prefetch::Prefetch;
 use crate::command::search_decks_for_card::SearchDecksForCard;
@@ -21,6 +22,7 @@ mod all_cards;
 mod setup_env;
 mod find_clusters;
 mod search_decks_for_card;
+mod compare;
 
 pub trait Executor {
     async fn exec(self, store: &Store<'_>) -> anyhow::Result<()>;
@@ -70,6 +72,10 @@ pub enum Command {
         #[clap(short, long, value_parser)]
         card: Option<Card>,
     },
+    Compare {
+        #[arg(value_parser = clap::value_parser!(Commander), env = "COMMANDER")]
+        commander: Commander,
+    },
 }
 impl Command {
     pub async fn exec(self) -> anyhow::Result<()> {
@@ -83,6 +89,7 @@ impl Command {
             Command::CardsInTopDecks { commander, method } => run_command(&Store::new(&commander), CardsInTopDecks::new(method)).await,
             Command::FindClusters { commander, method, card_to_look_for, threshold } => run_command(&Store::new(&commander), FindClusters::new(method, card_to_look_for, threshold)).await,
             Command::SearchDecksForCard { commander, method, card } => run_command(&Store::new(&commander), SearchDecksForCard::new(card, method)).await,
+            Command::Compare { commander } => run_command(&Store::new(&commander), Compare::new(None, None)).await
         }
     }
 }
