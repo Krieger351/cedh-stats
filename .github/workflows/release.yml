@@ -21,8 +21,8 @@ jobs:
       - name: Upload binary as artifact
         uses: actions/upload-artifact@v3
         with:
-          name: my_project-linux
-          path: target/release/my_project
+          name: cedh-stats-linux
+          path: target/release/cedh-stats
 
   release:
     needs: build
@@ -40,5 +40,5 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: my_project/my_project
+          files: cedh-stats/cedh-stats-linux
           token: ${{ secrets.GITHUB_TOKEN }}
