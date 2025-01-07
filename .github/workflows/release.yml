@@ -35,7 +35,7 @@ jobs:
       - name: Prepare release package
         run: |
           mkdir dist
-          cp target/release/my_project dist/
+          cp target/release/cedh-stats dist/
           cp README.md dist/ || true # Include README if available
           
           # Windows: Create ZIP
