@@ -23,6 +23,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
@@ -32,19 +33,21 @@ jobs:
 
       - name: Build release binary
         run: cargo build --release
-      - name: Prepare release package
+
+      - name: Prepare release package (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          mkdir dist
+          Copy-Item target/release/cedh-stats.exe dist/
+          Compress-Archive -Path dist/* -DestinationPath cedh-stats-Windows.zip
+
+      - name: Prepare release package (Linux)
+        if: runner.os != 'Windows'
         run: |
           mkdir dist
           cp target/release/cedh-stats dist/
-          cp README.md dist/ || true # Include README if available
-          
-          # Windows: Create ZIP
-          if [ "$RUNNER_OS" == "Windows" ]; then
-            powershell Compress-Archive -Path dist/* -DestinationPath cedh-stats-${{ matrix.build }}.zip
-          else
-            # Linux/macOS: Create tar.gz
-            tar -czvf cedh-stats-${{ matrix.build }}.tar.gz -C dist .
-          fi
+          tar -czvf cedh-stats-Linux.tar.gz -C dist .
+
       - name: Upload binary as artifact
         uses: actions/upload-artifact@v3
         with:
