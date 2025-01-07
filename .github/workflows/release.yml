@@ -34,11 +34,11 @@ jobs:
       - name: Download build artifact
         uses: actions/download-artifact@v3
         with:
-          name: my_project-linux
-          path: my_project
+          name: cedh-stats-linux
+          path: cedh-stats
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: cedh-stats/cedh-stats-linux
+          files: cedh-stats/cedh-stats
           token: ${{ secrets.GITHUB_TOKEN }}
