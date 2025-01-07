@@ -2,7 +2,7 @@ name: Release
 
 permissions:
   contents: write
-  
+
 on:
   push:
     tags:
@@ -10,7 +10,15 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # You can add more, for any target you'd like!
+        include:
+          - build: linux
+            os: ubuntu-latest
+          - build: windows
+            os: windows-latest
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout code
@@ -24,11 +32,26 @@ jobs:
 
       - name: Build release binary
         run: cargo build --release
+      - name: Prepare release package
+        run: |
+          mkdir dist
+          cp target/release/my_project dist/
+          cp README.md dist/ || true # Include README if available
+          
+          # Windows: Create ZIP
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            powershell Compress-Archive -Path dist/* -DestinationPath cedh-stats-${{ matrix.build }}.zip
+          else
+            # Linux/macOS: Create tar.gz
+            tar -czvf cedh-stats-${{ matrix.build }}.tar.gz -C dist .
+          fi
       - name: Upload binary as artifact
         uses: actions/upload-artifact@v3
         with:
-          name: cedh-stats-linux
-          path: target/release/cedh-stats
+          name: cedh-stats-${{ matrix.build }}
+          path: |
+            cedh-stats-${{ matrix.build }}.zip
+            cedh-stats-${{ matrix.build }}.tar.gz
 
   release:
     needs: build
@@ -37,14 +60,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Download build artifact
+      - name: Download Linux archive
         uses: actions/download-artifact@v3
         with:
           name: cedh-stats-linux
-          path: cedh-stats
+          path: linux
+
+      - name: Download Windows archive
+        uses: actions/download-artifact@v3
+        with:
+          name: cedh-stats-windows
+          path: windows
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: cedh-stats/cedh-stats
+          files: |
+            linux/cedh-stats-linux.tar.gz
+            windows/cedh-stats-windows.zip
           token: ${{ secrets.GITHUB_TOKEN }}
